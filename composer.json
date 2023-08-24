@@ -1,0 +1,27 @@
+{
+  "name": "charcoal-dev/http-commons",
+  "description": "HTTP commons for Charcoal HTTP Client & Router",
+  "type": "library",
+  "homepage": "https://github.com/charcoal-dev/http-commons",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Furqan A. Siddiqui",
+      "email": "hello@furqansiddiqui.com",
+      "homepage": "https://www.furqansiddiqui.com",
+      "role": "Author"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "charcoal-dev/buffers": "dev-main"
+  },
+  "autoload": {
+    "psr-4": {
+      "Charcoal\\HTTP\\Commons\\": [
+        "src"
+      ]
+    }
+  },
+  "minimum-stability": "dev"
+}
