@@ -43,7 +43,12 @@ class ReadOnlyPayload extends AbstractPayload
      * @param bool $trim
      * @return string
      */
-    public function getASCII(string $prop, ?string $allowedLowChars = null, ?string $stripChars = null, bool $trim = true): string
+    public function getASCII(
+        string  $prop,
+        ?string $allowedLowChars = null,
+        ?string $stripChars = null,
+        bool    $trim = true,
+    ): string
     {
         $value = $this->getUnsafe($prop);
         if (!is_string($value)) {
@@ -59,14 +64,22 @@ class ReadOnlyPayload extends AbstractPayload
     }
 
     /**
+     * Returns sanitized value
+     * If $onlyStripHigh is set to true, returns ASCII string with any chars above > 127 stripped.
      * @param string $prop
      * @param string|null $allowedLowChars
      * @param string|null $stripChars
+     * @param bool $onlyStripHigh
      * @return string|int|float|array|bool|null
      */
-    public function getSanitized(string $prop, ?string $allowedLowChars = null, ?string $stripChars = null): string|int|float|array|bool|null
+    public function getSanitized(
+        string  $prop,
+        ?string $allowedLowChars = null,
+        ?string $stripChars = null,
+        bool    $onlyStripHigh = false,
+    ): string|int|float|array|bool|null
     {
-        return $this->sanitizeValue($this->getUnsafe($prop), $allowedLowChars, $stripChars);
+        return $this->sanitizeValue($this->getUnsafe($prop), $allowedLowChars, $stripChars, $onlyStripHigh);
     }
 
     /**
@@ -97,15 +110,21 @@ class ReadOnlyPayload extends AbstractPayload
      * @param mixed $in
      * @param string|null $allowedLowChars
      * @param string|null $stripChars
+     * @param bool $onlyStripHigh
      * @return string|int|float|bool|array|null
      */
     private function sanitizeValue(
         mixed   $in,
         ?string $allowedLowChars = null,
-        ?string $stripChars = null
+        ?string $stripChars = null,
+        bool    $onlyStripHigh = false,
     ): string|int|float|bool|null|array
     {
         if (is_string($in)) {
+            if ($onlyStripHigh) {
+                return filter_var($in, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
+            }
+
             return $this->getASCII($in);
         }
 
