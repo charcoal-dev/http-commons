@@ -15,25 +15,25 @@ declare(strict_types=1);
 namespace Charcoal\HTTP\Commons;
 
 /**
- * Class WritableHeaders
+ * Class WritablePayload
  * @package Charcoal\HTTP\Commons
  */
-class WritableHeaders extends Headers
+class WritablePayload extends AbstractPayload
 {
     /**
-     * Sets a header value
+     * Sets a payload value
      * @param string $key
-     * @param string $value
+     * @param string|int|float|bool|array|object|null $value
      * @return $this
      */
-    public function set(string $key, string $value): static
+    public function set(string $key, string|int|float|bool|null|array|object $value): self
     {
-        $this->setHeader($key, $value);
+        $this->setPayload($key, $value);
         return $this;
     }
 
     /**
-     * Flushes entire Headers object
+     * Flushes entire Payload object
      * @return void
      */
     public function flush(): void
