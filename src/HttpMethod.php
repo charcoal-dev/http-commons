@@ -20,9 +20,9 @@ namespace Charcoal\HTTP\Commons;
  */
 enum HttpMethod: string
 {
-    case GET = "get";
-    case POST = "post";
-    case PUT = "put";
-    case DELETE = "delete";
-    case OPTIONS = "options";
+    case GET = "GET";
+    case POST = "POST";
+    case PUT = "PUT";
+    case DELETE = "DELETE";
+    case OPTIONS = "OPTIONS";
 }
