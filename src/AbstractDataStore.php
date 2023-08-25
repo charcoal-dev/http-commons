@@ -52,6 +52,20 @@ abstract class AbstractDataStore implements \IteratorAggregate
     }
 
     /**
+     * @return array
+     */
+    final public function toArray(): array
+    {
+        $data = [];
+        /** @var \Charcoal\HTTP\Commons\KeyValuePair $prop */
+        foreach ($this->data as $prop) {
+            $data[$prop->key] = $prop->value;
+        }
+
+        return $data;
+    }
+
+    /**
      * @param \Charcoal\HTTP\Commons\KeyValuePair $pair
      * @return bool
      */
