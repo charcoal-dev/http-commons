@@ -18,11 +18,11 @@ namespace Charcoal\HTTP\Commons;
  * Class HttpMethod
  * @package Charcoal\HTTP\Commons
  */
-enum HttpMethod
+enum HttpMethod: string
 {
-    case GET;
-    case POST;
-    case PUT;
-    case DELETE;
-    case OPTIONS;
+    case GET = "get";
+    case POST = "post";
+    case PUT = "put";
+    case DELETE = "delete";
+    case OPTIONS = "options";
 }
