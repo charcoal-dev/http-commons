@@ -50,5 +50,7 @@ class PayloadTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(65536, $payload->getInt("int"));
         $this->assertEquals(1234, $payload->getInt("int2"));
+        $this->assertNull($payload->getInt("test1"));
+        $this->assertNull($payload->getInt("test3"));
     }
 }
