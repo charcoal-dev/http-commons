@@ -43,6 +43,15 @@ abstract class AbstractDataStore implements \IteratorAggregate
     }
 
     /**
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return array_key_exists(strtolower($key), $this->data);
+    }
+
+    /**
      * @param \Charcoal\HTTP\Commons\KeyValuePair $pair
      * @return bool
      */
