@@ -41,12 +41,16 @@ abstract class AbstractPayload extends AbstractDataStore
 
     /**
      * Sets a payload key/value pair
-     * @param string $key
+     * @param int|string $key
      * @param mixed $value
      * @return void
      */
-    protected function setPayload(string $key, mixed $value): void
+    protected function setPayload(int|string $key, mixed $value): void
     {
+        if (is_int($key)) {
+            $key = strval($key);
+        }
+
         if (is_scalar($value) || is_null($value)) {
             $pair = new KeyValuePair($key, $value);
         } elseif (is_array($value) || is_object($value)) {
