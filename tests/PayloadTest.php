@@ -22,7 +22,7 @@ class PayloadTest extends \PHPUnit\Framework\TestCase
      */
     public function testPayload(): void
     {
-        $payload = new \Charcoal\HTTP\Commons\ReadOnlyPayload([
+        $payload = new \Charcoal\Http\Commons\ReadOnlyPayload([
             "dump" => ["a", "b", 1, 2, chr(0) . "bad-strin" . chr(103), ["sub" => ["c", "h", "a", "\vr", "c\r\n", "o", "a\t", "l"]]],
             "test1" => "\0test",
             "test2" => "simple-str",

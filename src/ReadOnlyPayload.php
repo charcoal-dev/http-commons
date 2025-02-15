@@ -12,13 +12,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\HTTP\Commons;
+namespace Charcoal\Http\Commons;
 
 use Charcoal\Charsets\ASCII;
 
 /**
  * Class ReadOnlyPayload
- * @package Charcoal\HTTP\Commons
+ * @package Charcoal\Http\Commons
  */
 class ReadOnlyPayload extends AbstractPayload
 {

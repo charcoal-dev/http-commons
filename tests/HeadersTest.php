@@ -22,7 +22,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
      */
     public function testReadOnlyHeaders(): void
     {
-        $headers = new \Charcoal\HTTP\Commons\Headers([
+        $headers = new \Charcoal\Http\Commons\Headers([
             "Content-Type" => "application/json",
             "Accept" => "json",
             "X-Charcoal-App" => "MyTestApp"
@@ -30,7 +30,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(3, $headers->count());
         foreach ($headers as $header) {
-            $this->assertInstanceOf(\Charcoal\HTTP\Commons\KeyValuePair::class, $header);
+            $this->assertInstanceOf(\Charcoal\Http\Commons\KeyValuePair::class, $header);
         }
 
         $this->assertEquals("MyTestApp", $headers->get("x-charcoal-app"));
@@ -42,7 +42,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
      */
     public function testWritableHeaders(): void
     {
-        $headers = new \Charcoal\HTTP\Commons\WritableHeaders([
+        $headers = new \Charcoal\Http\Commons\WritableHeaders([
             "Content-Type" => "application/json",
             "Accept" => "json",
             "X-Charcoal-App" => "MyTestApp"
@@ -77,19 +77,19 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
             "X-Bad-Value" => "this has bad value " . chr(128)
         ];
 
-        $headers1 = new \Charcoal\HTTP\Commons\Headers($badHeaders, validateKeys: false, sanitizeValues: false);
+        $headers1 = new \Charcoal\Http\Commons\Headers($badHeaders, validateKeys: false, sanitizeValues: false);
         $this->assertEquals(4, $headers1->count());
         $this->assertEquals($badHeaders["X-Bad-Value"], $headers1->get("x-bad-value"));
         $this->assertEquals("bad-key-value", $headers1->get("th&sd"));
         unset($headers1);
 
-        $headers2 = new \Charcoal\HTTP\Commons\Headers($badHeaders, validateKeys: true, sanitizeValues: false);
+        $headers2 = new \Charcoal\Http\Commons\Headers($badHeaders, validateKeys: true, sanitizeValues: false);
         $this->assertEquals(3, $headers2->count());
         $this->assertEquals($badHeaders["X-Bad-Value"], $headers2->get("x-bad-value"));
         $this->assertNull($headers2->get("th&sd")); // This wasn't set
         unset($headers2);
 
-        $headers3 = new \Charcoal\HTTP\Commons\Headers($badHeaders, validateKeys: true, sanitizeValues: true);
+        $headers3 = new \Charcoal\Http\Commons\Headers($badHeaders, validateKeys: true, sanitizeValues: true);
         $this->assertEquals(3, $headers3->count());
         // Last character was stripped by sanitizer:
         $this->assertEquals("this has bad value ", $headers3->get("x-bad-value"));

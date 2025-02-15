@@ -12,11 +12,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\HTTP\Commons;
+namespace Charcoal\Http\Commons;
 
 /**
  * Class AbstractDataStore
- * @package Charcoal\HTTP\Commons
+ * @package Charcoal\Http\Commons
  */
 abstract class AbstractDataStore implements \IteratorAggregate
 {
@@ -57,7 +57,7 @@ abstract class AbstractDataStore implements \IteratorAggregate
     final public function toArray(): array
     {
         $data = [];
-        /** @var \Charcoal\HTTP\Commons\KeyValuePair $prop */
+        /** @var \Charcoal\Http\Commons\KeyValuePair $prop */
         foreach ($this->data as $prop) {
             $data[$prop->key] = $prop->value;
         }
@@ -66,7 +66,7 @@ abstract class AbstractDataStore implements \IteratorAggregate
     }
 
     /**
-     * @param \Charcoal\HTTP\Commons\KeyValuePair $pair
+     * @param \Charcoal\Http\Commons\KeyValuePair $pair
      * @return bool
      */
     protected function storeKeyValue(KeyValuePair $pair): bool
@@ -82,7 +82,7 @@ abstract class AbstractDataStore implements \IteratorAggregate
 
     /**
      * @param string $key
-     * @return \Charcoal\HTTP\Commons\KeyValuePair|null
+     * @return \Charcoal\Http\Commons\KeyValuePair|null
      */
     protected function getValue(string $key): ?KeyValuePair
     {

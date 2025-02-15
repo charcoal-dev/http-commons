@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-use Charcoal\HTTP\Commons\HttpMethod;
+use Charcoal\Http\Commons\HttpMethod;
 
 /**
  * Class HttpMethodTest

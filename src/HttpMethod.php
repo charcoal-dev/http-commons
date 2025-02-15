@@ -12,11 +12,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\HTTP\Commons;
+namespace Charcoal\Http\Commons;
 
 /**
  * Class HttpMethod
- * @package Charcoal\HTTP\Commons
+ * @package Charcoal\Http\Commons
  */
 enum HttpMethod: string
 {

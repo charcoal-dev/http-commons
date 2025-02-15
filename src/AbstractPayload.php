@@ -12,13 +12,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\HTTP\Commons;
+namespace Charcoal\Http\Commons;
 
 use Charcoal\Buffers\AbstractByteArray;
 
 /**
  * Class AbstractPayload
- * @package Charcoal\HTTP\Commons
+ * @package Charcoal\Http\Commons
  */
 abstract class AbstractPayload extends AbstractDataStore
 {
