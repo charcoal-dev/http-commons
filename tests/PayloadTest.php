@@ -12,6 +12,8 @@
 
 declare(strict_types=1);
 
+use Charcoal\Http\Commons\WritablePayload;
+
 /**
  * Class PayloadTest
  */
@@ -52,5 +54,87 @@ class PayloadTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(1234, $payload->getInt("int2"));
         $this->assertNull($payload->getInt("test1"));
         $this->assertNull($payload->getInt("test3"));
+    }
+
+    public function testGetUnrecognizedKeysWithEmptyData(): void
+    {
+        // Empty payload
+        $payload = new WritablePayload([], false);
+
+        // Any allowed keys (even none) should return empty array
+        $unrecognized = $payload->getUnrecognizedKeys('alpha', 'beta');
+        $this->assertEmpty($unrecognized, 'Empty payload should not have unrecognized keys');
+    }
+
+    public function testGetUnrecognizedKeysNoAllowedKeys(): void
+    {
+        // Payload has some keys
+        $payload = new WritablePayload([], false);
+        $payload->set('k1', 'value1');
+        $payload->set('k2', 'value2');
+
+        // No allowed keys given, so all payload keys should be unrecognized
+        $unrecognized = $payload->getUnrecognizedKeys();
+        $this->assertCount(2, $unrecognized, 'Expected all payload keys to be unrecognized');
+        $this->assertContains('k1', $unrecognized);
+        $this->assertContains('k2', $unrecognized);
+    }
+
+    public function testGetUnrecognizedKeysPartialMatch(): void
+    {
+        $payload = new WritablePayload([], false);
+        $payload->set('key1', 'value1');
+        $payload->set('key2', 'value2');
+        $payload->set('key3', 'value3');
+
+        // Only key1 and key2 are recognized
+        $unrecognized = $payload->getUnrecognizedKeys('key1', 'key2');
+        $this->assertCount(1, $unrecognized);
+        $this->assertSame(['key3'], $unrecognized);
+    }
+
+    public function testGetUnrecognizedKeysCaseInsensitivity(): void
+    {
+        $payload = new WritablePayload([], false);
+        $payload->set('CaseKey', 'someValue');
+
+        // Allowed keys differ by case
+        $unrecognized = $payload->getUnrecognizedKeys('casekey');
+        $this->assertEmpty(
+            $unrecognized,
+            'Keys should be recognized regardless of case, expecting no unrecognized keys'
+        );
+    }
+
+    public function testIsRestrictedToKeysEmptyData(): void
+    {
+        // Empty payload again
+        $payload = new WritablePayload([], false);
+
+        // Even if many keys are allowed, empty data has no unrecognized keys
+        $this->assertTrue($payload->isRestrictedToKeys('keyA', 'keyB'), 'Empty payload is trivially restricted');
+    }
+
+    public function testIsRestrictedToKeysAllAllowed(): void
+    {
+        $payload = new WritablePayload([], false);
+        $payload->set('user', 'anyUser');
+        $payload->set('email', 'anyEmail');
+
+        // If both keys exist in allowed list, the payload is restricted
+        $this->assertTrue($payload->isRestrictedToKeys('user', 'email'), 'All keys in payload should be allowed');
+    }
+
+    public function testIsRestrictedToKeysWithUnrecognizedKeys(): void
+    {
+        $payload = new WritablePayload([], false);
+        $payload->set('allowedKey', 'someValue');
+        $payload->set('forbiddenKey', 'someValue');
+
+        // Only "allowedKey" is recognized
+        $this->assertFalse(
+            $payload->isRestrictedToKeys('allowedKey'),
+            'Payload should not be restricted because "forbiddenKey" is unrecognized'
+        );
     }
 }

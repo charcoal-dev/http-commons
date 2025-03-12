@@ -40,6 +40,27 @@ abstract class AbstractPayload extends AbstractDataStore
     }
 
     /**
+     * Finds any unrecognized key in object from difference of recognized (argument) keys
+     * @param string ...$keys
+     * @return array
+     */
+    public function getUnrecognizedKeys(string ...$keys): array
+    {
+        $keys = array_map("strtolower", $keys);
+        return array_values(array_diff(array_keys($this->data), $keys));
+    }
+
+    /**
+     * Returns true if object is only comprised of known (argument) keys
+     * @param string ...$keys
+     * @return bool
+     */
+    public function isRestrictedToKeys(string ...$keys): bool
+    {
+        return empty($this->getUnrecognizedKeys(...$keys));
+    }
+
+    /**
      * Sets a payload key/value pair
      * @param int|string $key
      * @param mixed $value
