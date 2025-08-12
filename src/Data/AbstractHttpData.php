@@ -12,7 +12,7 @@ use Charcoal\Base\Enums\ValidationState;
 
 /**
  * Class AbstractHttpData
- * @package Charcoal\Http\Commons
+ * @package Charcoal\Http\Commons\Data
  * @property array<string,KeyValuePair> $data
  */
 abstract class AbstractHttpData implements \IteratorAggregate
@@ -26,7 +26,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     public function __construct(
         public readonly HttpDataPolicy $policy,
-        protected ValidationState $accessTrust = ValidationState::RAW,
+        protected ValidationState      $accessTrust = ValidationState::RAW,
     )
     {
     }
@@ -62,7 +62,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     protected function normalizeEntityKey(string $key): string
     {
-        return strtolower(trim($key));
+        return strtolower($key);
     }
 
     /**
@@ -72,7 +72,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     protected function storeKeyValue(string $key, int|string|float|bool|null|array $value): static
     {
-        $key = $this->validateEntityKey($key, $this->policy->trust);
+        $key = $this->validateEntityKey(trim($key), $this->policy->trust);
         $indexId = $this->normalizeEntityKey($key);
         if ($this->policy->trust->value < ValidationState::VALIDATED->value) {
             $value = $this->validateEntityValueFn($value, $key);
@@ -88,7 +88,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     final protected function accessKey(string $key): string
     {
-        return $this->normalizeEntityKey($this->validateEntityKey($key, $this->accessTrust));
+        return $this->normalizeEntityKey($this->validateEntityKey(trim($key), $this->accessTrust));
     }
 
     /**

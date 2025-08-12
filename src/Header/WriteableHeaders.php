@@ -14,16 +14,28 @@ namespace Charcoal\Http\Commons\Header;
  */
 class WriteableHeaders extends Headers
 {
+    /**
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
     final public function set(string $name, string $value): static
     {
         return $this->storeKeyValue($name, $value);
     }
 
+    /**
+     * @param string $name
+     * @return $this
+     */
     final public function delete(string $name): static
     {
         return $this->deleteKeyValue($name);
     }
 
+    /**
+     * @return void
+     */
     final public function flush(): void
     {
         $this->data = [];

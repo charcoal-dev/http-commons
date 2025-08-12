@@ -19,17 +19,29 @@ use Charcoal\Http\Commons\Support\HttpHelper;
 
 /**
  * Class Headers
- * @package Charcoal\Http\Commons\Data\Header
+ * @package Charcoal\Http\Commons\Header
  */
 class Headers extends AbstractHttpData
 {
+    /**
+     * @param HttpDataPolicy $dataPolicy
+     * @param HttpHeaderKeyPolicy $keyPolicy
+     * @param ValidationState $accessTrust
+     * @param array<string,string> $initialData
+     */
     public function __construct(
-        public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
         HttpDataPolicy                      $dataPolicy,
+        public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
         ValidationState                     $accessTrust = ValidationState::RAW,
+        array                               $initialData = [],
     )
     {
         parent::__construct($dataPolicy, $accessTrust);
+        if ($initialData) {
+            foreach ($initialData as $name => $value) {
+                $this->storeKeyValue($name, $value);
+            }
+        }
     }
 
     /**
@@ -67,7 +79,7 @@ class Headers extends AbstractHttpData
 
         $length = match ($this->policy->valueCharset) {
             Charset::ASCII => strlen($value),
-            Charset::UTF8 => mb_strlen($value, "UTF-8"),
+            Charset::UTF8 => $this->policy->countLengthUtf8 ? mb_strlen($value, "UTF-8") : strlen($value),
         };
 
         if ($length > $this->policy->valueMaxLength) {
