@@ -6,10 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons;
+namespace Charcoal\Http\Commons\Data;
 
 use Charcoal\Base\Enums\Charset;
 use Charcoal\Base\Enums\ValidationState;
+use Charcoal\Http\Commons\KeyValuePair;
 
 /**
  * Class AbstractHttpData
@@ -20,25 +21,32 @@ abstract class AbstractHttpData implements \IteratorAggregate
 {
     /** @var array<string,KeyValuePair> $data */
     protected array $data = [];
+    protected ?string $lastStoredIndex = null;
 
     /**
-     * @param Charset $keyCharset
      * @param ValidationState $keyTrust
+     * @param int $keyMaxLength
+     * @param bool $keyOverflowTrim
+     * @param Charset $valueCharset
      * @param ValidationState $valueTrust
-     * @param int $maxLengthPerValue
+     * @param int $valueMaxLength
+     * @param bool $valueOverflowTrim
      */
     public function __construct(
-        public readonly Charset         $keyCharset = Charset::ASCII,
-        public readonly ValidationState $keyTrust = ValidationState::RAW,
-        public readonly ValidationState $valueTrust = ValidationState::RAW,
-        public int                      $maxLengthPerValue = 2048,
+        public readonly ValidationState $keyTrust,
+        public readonly int             $keyMaxLength,
+        public readonly bool            $keyOverflowTrim,
+        public readonly Charset         $valueCharset,
+        public readonly ValidationState $valueTrust,
+        public readonly int             $valueMaxLength,
+        public readonly bool            $valueOverflowTrim,
     )
     {
     }
 
     abstract protected function validateEntityKeyFn(string $name): string;
 
-    abstract protected function validateEntityValueFn(mixed $value): int|string|float|bool|null|array;
+    abstract protected function validateEntityValueFn(mixed $value, string $name): int|string|float|bool|null|array;
 
     /**
      * @param string $key
@@ -70,8 +78,13 @@ abstract class AbstractHttpData implements \IteratorAggregate
     protected function storeKeyValue(string $key, int|string|float|bool|null|array $value): static
     {
         $key = $this->validateEntityKey($key, $this->keyTrust);
-        $this->data[$this->normalizeEntityKey($key, $this->keyTrust)] = new KeyValuePair($key,
-            $this->validateEntityValueFn($value));
+        $indexId = $this->normalizeEntityKey($key, $this->keyTrust);
+        if ($this->valueTrust->value < ValidationState::VALIDATED->value) {
+            $value = $this->validateEntityValueFn($value, $key);
+        }
+
+        $this->data[$indexId] = new KeyValuePair($key, $value);
+        $this->lastStoredIndex = $indexId;
         return $this;
     }
 
