@@ -8,6 +8,10 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Exception;
 
+/**
+ * Class HeaderException
+ * @package Charcoal\Http\Commons\Exception
+ */
 class HeaderException extends HttpException
 {
 }
