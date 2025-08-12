@@ -87,6 +87,10 @@ class Payload extends AbstractHttpData
             $fromObject = null;
             if (is_object($value)) {
                 $fromObject = match (true) {
+                    $value instanceof \DateTimeInterface => $value->format(DATE_ATOM),
+                    $value instanceof \BackedEnum => $value->value,
+                    $value instanceof \UnitEnum => $value->name,
+                    $value instanceof \Stringable => (string)$value,
                     $value instanceof AbstractByteArray => "0x" . $value->toBase16(),
                     $value instanceof StringVector,
                         $value instanceof AbstractTokenVector,
