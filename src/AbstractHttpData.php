@@ -36,7 +36,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
     {
     }
 
-    abstract protected function validateEntityKeyFn(string $value): string;
+    abstract protected function validateEntityKeyFn(string $name): string;
 
     abstract protected function validateEntityValueFn(mixed $value): int|string|float|bool|null|array;
 
