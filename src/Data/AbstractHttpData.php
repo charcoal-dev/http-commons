@@ -8,9 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Data;
 
-use Charcoal\Base\Enums\Charset;
 use Charcoal\Base\Enums\ValidationState;
-use Charcoal\Http\Commons\KeyValuePair;
 
 /**
  * Class AbstractHttpData
@@ -23,24 +21,12 @@ abstract class AbstractHttpData implements \IteratorAggregate
     protected array $data = [];
 
     /**
-     * @param int $keyMaxLength
-     * @param bool $keyOverflowTrim
-     * @param Charset $valueCharset
-     * @param int $valueMaxLength
-     * @param bool $valueOverflowTrim
-     * @param ValidationState $writeTrust
+     * @param HttpDataPolicy $policy
      * @param ValidationState $accessTrust
-     * @param bool $countLengthUtf8
      */
     public function __construct(
-        public readonly int             $keyMaxLength,
-        public readonly bool            $keyOverflowTrim,
-        public readonly Charset         $valueCharset,
-        public readonly int             $valueMaxLength,
-        public readonly bool            $valueOverflowTrim,
-        public readonly ValidationState $writeTrust = ValidationState::RAW,
-        protected ValidationState       $accessTrust = ValidationState::RAW,
-        protected bool                  $countLengthUtf8 = false,
+        public readonly HttpDataPolicy $policy,
+        protected ValidationState $accessTrust = ValidationState::RAW,
     )
     {
     }
@@ -72,13 +58,11 @@ abstract class AbstractHttpData implements \IteratorAggregate
 
     /**
      * @param string $key
-     * @param ValidationState $trust
      * @return string
      */
-    protected function normalizeEntityKey(string $key, ValidationState $trust): string
+    protected function normalizeEntityKey(string $key): string
     {
-        return $trust->value < ValidationState::NORMALIZED->value ?
-            strtolower($key) : $key;
+        return strtolower(trim($key));
     }
 
     /**
@@ -88,9 +72,9 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     protected function storeKeyValue(string $key, int|string|float|bool|null|array $value): static
     {
-        $key = $this->validateEntityKey($key, $this->writeTrust);
-        $indexId = $this->normalizeEntityKey($key, $this->writeTrust);
-        if ($this->writeTrust->value < ValidationState::VALIDATED->value) {
+        $key = $this->validateEntityKey($key, $this->policy->trust);
+        $indexId = $this->normalizeEntityKey($key);
+        if ($this->policy->trust->value < ValidationState::VALIDATED->value) {
             $value = $this->validateEntityValueFn($value, $key);
         }
 
@@ -102,9 +86,9 @@ abstract class AbstractHttpData implements \IteratorAggregate
      * @param string $key
      * @return string
      */
-    final protected function indexKey(string $key): string
+    final protected function accessKey(string $key): string
     {
-        return $this->normalizeEntityKey($this->validateEntityKey($key, $this->accessTrust), $this->accessTrust);
+        return $this->normalizeEntityKey($this->validateEntityKey($key, $this->accessTrust));
     }
 
     /**
@@ -113,7 +97,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     final public function get(string $key): ?KeyValuePair
     {
-        return $this->data[$this->indexKey($key)] ?? null;
+        return $this->data[$this->accessKey($key)] ?? null;
     }
 
     /**
@@ -122,7 +106,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     protected function deleteKeyValue(string $key): static
     {
-        $key = $this->indexKey($key);
+        $key = $this->accessKey($key);
         if (isset($this->data[$key])) {
             unset($this->data[$key]);
         }
@@ -136,7 +120,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     final public function has(string $key): bool
     {
-        return array_key_exists($this->indexKey($key), $this->data);
+        return array_key_exists($this->accessKey($key), $this->data);
     }
 
     /**
@@ -166,18 +150,5 @@ abstract class AbstractHttpData implements \IteratorAggregate
     final public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->data);
-    }
-
-    /**
-     * @param string $value
-     * @return int
-     */
-    protected function calcLength(string $value): int
-    {
-        if ($this->valueCharset === Charset::UTF8 && $this->countLengthUtf8) {
-            return mb_strlen($value, "UTF-8");
-        }
-
-        return strlen($value);
     }
 }
