@@ -95,7 +95,7 @@ abstract class AbstractHttpData implements \IteratorAggregate
      * @param string $key
      * @return KeyValuePair|null
      */
-    final public function get(string $key): ?KeyValuePair
+    protected function getKeyValue(string $key): ?KeyValuePair
     {
         return $this->data[$this->accessKey($key)] ?? null;
     }

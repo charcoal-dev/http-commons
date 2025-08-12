@@ -9,10 +9,12 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Header;
 
 use Charcoal\Base\Enums\Charset;
+use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\ValidationState;
 use Charcoal\Http\Commons\Data\AbstractHttpData;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
 use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
+use Charcoal\Http\Commons\Exception\HeaderException;
 use Charcoal\Http\Commons\Exception\InvalidHeaderNameException;
 use Charcoal\Http\Commons\Exception\InvalidHeaderValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
@@ -27,21 +29,39 @@ class Headers extends AbstractHttpData
      * @param HttpDataPolicy $dataPolicy
      * @param HttpHeaderKeyPolicy $keyPolicy
      * @param ValidationState $accessTrust
-     * @param array<string,string> $initialData
+     * @param array $initialData
+     * @param ExceptionAction $initialDataValidation
+     * @throws HeaderException
      */
     public function __construct(
         HttpDataPolicy                      $dataPolicy,
         public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
         ValidationState                     $accessTrust = ValidationState::RAW,
         array                               $initialData = [],
+        ExceptionAction                     $initialDataValidation = ExceptionAction::Throw,
     )
     {
         parent::__construct($dataPolicy, $accessTrust);
         if ($initialData) {
             foreach ($initialData as $name => $value) {
-                $this->storeKeyValue($name, $value);
+                try {
+                    $this->storeKeyValue($name, $value);
+                } catch (HeaderException $e) {
+                    if ($initialDataValidation === ExceptionAction::Throw) {
+                        throw $e;
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * @param string $name
+     * @return string|null
+     */
+    public function get(string $name): ?string
+    {
+        return $this->getKeyValue($name)?->value ?? null;
     }
 
     /**

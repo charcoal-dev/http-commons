@@ -12,7 +12,7 @@ namespace Charcoal\Http\Commons\Header;
  * Class WriteableHeaders
  * @package Charcoal\Http\Commons\Header
  */
-class WriteableHeaders extends Headers
+class WritableHeaders extends Headers
 {
     /**
      * @param string $name
