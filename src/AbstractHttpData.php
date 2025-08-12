@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons;
 
+use Charcoal\Base\Enums\Charset;
+use Charcoal\Base\Enums\ValidationState;
+
 /**
  * Class AbstractHttpData
  * @package Charcoal\Http\Commons
@@ -17,51 +20,117 @@ abstract class AbstractHttpData implements \IteratorAggregate
 {
     /** @var array<string,KeyValuePair> $data */
     protected array $data = [];
-    protected int $count = 0;
 
-    abstract protected function sanitizeStoreKey(string $key): string;
-
-    protected function normalizeSanitizeStoreKey(string $key): string
+    /**
+     * @param Charset $keyCharset
+     * @param ValidationState $keyTrust
+     * @param ValidationState $valueTrust
+     * @param int $maxLengthPerValue
+     */
+    public function __construct(
+        public readonly Charset         $keyCharset = Charset::ASCII,
+        public readonly ValidationState $keyTrust = ValidationState::RAW,
+        public readonly ValidationState $valueTrust = ValidationState::RAW,
+        public int                      $maxLengthPerValue = 2048,
+    )
     {
-        return strtolower(trim($this->sanitizeStoreKey($key)));
     }
 
-    public function count(): int
+    abstract protected function validateEntityKeyFn(string $value): string;
+
+    abstract protected function validateEntityValueFn(mixed $value): int|string|float|bool|null|array;
+
+    /**
+     * @param string $key
+     * @param ValidationState $trust
+     * @return string
+     */
+    protected function validateEntityKey(string $key, ValidationState $trust): string
     {
-        return $this->count;
+        return $trust->value < ValidationState::VALIDATED->value ?
+            $this->validateEntityKeyFn($key) : $key;
     }
 
-    public function has(string $key): bool
+    /**
+     * @param string $key
+     * @param ValidationState $trust
+     * @return string
+     */
+    protected function normalizeEntityKey(string $key, ValidationState $trust): string
     {
-        return array_key_exists($this->normalizeSanitizeStoreKey($key), $this->data);
+        return $trust->value < ValidationState::NORMALIZED->value ?
+            strtolower($key) : $key;
     }
 
-    protected function storeKeyValue(KeyValuePair $pair): bool
+    /**
+     * @param string $key
+     * @param int|string|float|bool|array|null $value
+     * @return $this
+     */
+    protected function storeKeyValue(string $key, int|string|float|bool|null|array $value): static
     {
-        $this->data[$this->normalizeSanitizeStoreKey($pair->key)] = $pair;
-        $this->count++;
-        return true;
+        $key = $this->validateEntityKey($key, $this->keyTrust);
+        $this->data[$this->normalizeEntityKey($key, $this->keyTrust)] = new KeyValuePair($key,
+            $this->validateEntityValueFn($value));
+        return $this;
     }
 
-    protected function getKeyValue(string $key): ?KeyValuePair
+    /**
+     * @param string $key
+     * @param ValidationState $trust
+     * @return string
+     */
+    final protected function indexKey(string $key, ValidationState $trust): string
     {
-        return $this->data[$this->normalizeSanitizeStoreKey($key)] ?? null;
+        return $this->normalizeEntityKey($this->validateEntityKey($key, $trust), $trust);
     }
 
-    protected function hasValue(string $key): bool
+    /**
+     * @param string $key
+     * @param ValidationState $trust
+     * @return KeyValuePair|null
+     */
+    protected function getKeyValue(string $key, ValidationState $trust): ?KeyValuePair
     {
-        return isset($this->data[$this->normalizeSanitizeStoreKey($key)]);
+        return $this->data[$this->indexKey($key, $trust)] ?? null;
     }
 
-    protected function deleteValue(string $key): void
+    /**
+     * @param string $key
+     * @param ValidationState $trust
+     * @return $this
+     */
+    protected function deleteKeyValue(string $key, ValidationState $trust): static
     {
-        $key = $this->normalizeSanitizeStoreKey($key);
+        $key = $this->indexKey($key, $trust);
         if (isset($this->data[$key])) {
             unset($this->data[$key]);
-            $this->count--;
         }
+
+        return $this;
     }
 
+    /**
+     * @param string $key
+     * @param ValidationState $trust
+     * @return bool
+     */
+    final public function has(string $key, ValidationState $trust): bool
+    {
+        return array_key_exists($this->indexKey($key, $trust), $this->data);
+    }
+
+    /**
+     * @return int
+     */
+    final public function count(): int
+    {
+        return count($this->data);
+    }
+
+    /**
+     * @return array
+     */
     final public function toArray(): array
     {
         $data = [];
@@ -72,7 +141,10 @@ abstract class AbstractHttpData implements \IteratorAggregate
         return $data;
     }
 
-    public function getIterator(): \Traversable
+    /**
+     * @return \Traversable
+     */
+    final public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->data);
     }
