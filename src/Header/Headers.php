@@ -11,10 +11,10 @@ namespace Charcoal\Http\Commons\Header;
 use Charcoal\Base\Enums\Charset;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\ValidationState;
+use Charcoal\Base\Vectors\ExceptionVector;
 use Charcoal\Http\Commons\Data\AbstractHttpData;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
 use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
-use Charcoal\Http\Commons\Exception\HeaderException;
 use Charcoal\Http\Commons\Exception\InvalidHeaderNameException;
 use Charcoal\Http\Commons\Exception\InvalidHeaderValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
@@ -31,7 +31,9 @@ class Headers extends AbstractHttpData
      * @param ValidationState $accessTrust
      * @param array $initialData
      * @param ExceptionAction $initialDataValidation
-     * @throws HeaderException
+     * @param ExceptionVector|null $exceptions
+     * @param Charset $valueCharset
+     * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function __construct(
         HttpDataPolicy                      $dataPolicy,
@@ -39,20 +41,11 @@ class Headers extends AbstractHttpData
         ValidationState                     $accessTrust = ValidationState::RAW,
         array                               $initialData = [],
         ExceptionAction                     $initialDataValidation = ExceptionAction::Throw,
+        ?ExceptionVector                    $exceptions = null,
+        public Charset                      $valueCharset = Charset::ASCII,
     )
     {
-        parent::__construct($dataPolicy, $accessTrust);
-        if ($initialData) {
-            foreach ($initialData as $name => $value) {
-                try {
-                    $this->storeKeyValue($name, $value);
-                } catch (HeaderException $e) {
-                    if ($initialDataValidation === ExceptionAction::Throw) {
-                        throw $e;
-                    }
-                }
-            }
-        }
+        parent::__construct($dataPolicy, $accessTrust, $initialData, $initialDataValidation, $exceptions);
     }
 
     /**
@@ -93,11 +86,11 @@ class Headers extends AbstractHttpData
             throw new InvalidHeaderValueException("Header value must be a string", $name);
         }
 
-        if (!HttpHelper::isValidHeaderValue($value, $this->policy->valueCharset)) {
+        if (!HttpHelper::isValidHeaderValue($value, $this->valueCharset)) {
             throw new InvalidHeaderValueException("Header value contains invalid characters", $name);
         }
 
-        $length = match ($this->policy->valueCharset) {
+        $length = match ($this->valueCharset) {
             Charset::ASCII => strlen($value),
             Charset::UTF8 => $this->policy->countLengthUtf8 ? mb_strlen($value, "UTF-8") : strlen($value),
         };
@@ -107,7 +100,7 @@ class Headers extends AbstractHttpData
                 throw new InvalidHeaderValueException("Header value exceeds maximum length", $name);
             }
 
-            return match ($this->policy->valueCharset) {
+            return match ($this->valueCharset) {
                 Charset::ASCII => substr($value, 0, $this->policy->valueMaxLength),
                 Charset::UTF8 => mb_substr($value, 0, $this->policy->valueMaxLength, "UTF-8"),
             };

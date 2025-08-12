@@ -8,7 +8,12 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Data;
 
+use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\ValidationState;
+use Charcoal\Base\Exceptions\WrappedException;
+use Charcoal\Base\Support\ObjectHelper;
+use Charcoal\Base\Vectors\ExceptionVector;
+use Charcoal\Http\Commons\Exception\HttpDataAppendExceptionInterface;
 
 /**
  * Class AbstractHttpData
@@ -23,12 +28,41 @@ abstract class AbstractHttpData implements \IteratorAggregate
     /**
      * @param HttpDataPolicy $policy
      * @param ValidationState $accessTrust
+     * @param array $initialData
+     * @param ExceptionAction $initialDataValidation
+     * @param ExceptionVector|null $exceptions
+     * @throws WrappedException
      */
     public function __construct(
         public readonly HttpDataPolicy $policy,
         protected ValidationState      $accessTrust = ValidationState::RAW,
+        array                          $initialData = [],
+        ExceptionAction                $initialDataValidation = ExceptionAction::Ignore,
+        ?ExceptionVector               $exceptions = null,
     )
     {
+        if ($initialData) {
+            foreach ($initialData as $name => $value) {
+                try {
+                    $this->storeKeyValue($name, $value);
+                } catch (\Throwable $t) {
+                    /** @var HttpDataAppendExceptionInterface|WrappedException $t */
+                    $t = $t instanceof HttpDataAppendExceptionInterface ? $t :
+                        new WrappedException($t, sprintf('HTTP object "%s" encountered "%s" while setting initial data',
+                            ObjectHelper::baseClassName($this), $t::class));
+
+                    if ($initialDataValidation === ExceptionAction::Log && $exceptions !== null) {
+                        $exceptions->append($t);
+                    }
+
+                    if ($initialDataValidation === ExceptionAction::Ignore) {
+                        continue;
+                    }
+
+                    throw $t;
+                }
+            }
+        }
     }
 
     abstract protected function validateEntityKeyFn(string $name): string;
