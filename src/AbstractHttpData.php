@@ -9,11 +9,11 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons;
 
 /**
- * Class AbstractDataStore
+ * Class AbstractHttpData
  * @package Charcoal\Http\Commons
  * @property array<string,KeyValuePair> $data
  */
-abstract class AbstractDataStore implements \IteratorAggregate
+abstract class AbstractHttpData implements \IteratorAggregate
 {
     /** @var array<string,KeyValuePair> $data */
     protected array $data = [];
