@@ -14,6 +14,7 @@ namespace Charcoal\Http\Commons\Enums;
  */
 enum HttpHeaderKeyPolicy
 {
-    case RFC7230;
     case STRICT;
+    case RFC7230;
+    case UNSANITIZED;
 }
