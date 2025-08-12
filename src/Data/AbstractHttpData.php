@@ -21,25 +21,26 @@ abstract class AbstractHttpData implements \IteratorAggregate
 {
     /** @var array<string,KeyValuePair> $data */
     protected array $data = [];
-    protected ?string $lastStoredIndex = null;
 
     /**
-     * @param ValidationState $keyTrust
      * @param int $keyMaxLength
      * @param bool $keyOverflowTrim
      * @param Charset $valueCharset
-     * @param ValidationState $valueTrust
      * @param int $valueMaxLength
      * @param bool $valueOverflowTrim
+     * @param ValidationState $writeTrust
+     * @param ValidationState $accessTrust
+     * @param bool $countLengthUtf8
      */
     public function __construct(
-        public readonly ValidationState $keyTrust,
         public readonly int             $keyMaxLength,
         public readonly bool            $keyOverflowTrim,
         public readonly Charset         $valueCharset,
-        public readonly ValidationState $valueTrust,
         public readonly int             $valueMaxLength,
         public readonly bool            $valueOverflowTrim,
+        public readonly ValidationState $writeTrust = ValidationState::RAW,
+        protected ValidationState       $accessTrust = ValidationState::RAW,
+        protected bool                  $countLengthUtf8 = false,
     )
     {
     }
@@ -47,6 +48,16 @@ abstract class AbstractHttpData implements \IteratorAggregate
     abstract protected function validateEntityKeyFn(string $name): string;
 
     abstract protected function validateEntityValueFn(mixed $value, string $name): int|string|float|bool|null|array;
+
+    /**
+     * @param ValidationState $trust
+     * @return $this
+     */
+    public function setAccessTrust(ValidationState $trust): static
+    {
+        $this->accessTrust = $trust;
+        return $this;
+    }
 
     /**
      * @param string $key
@@ -77,45 +88,41 @@ abstract class AbstractHttpData implements \IteratorAggregate
      */
     protected function storeKeyValue(string $key, int|string|float|bool|null|array $value): static
     {
-        $key = $this->validateEntityKey($key, $this->keyTrust);
-        $indexId = $this->normalizeEntityKey($key, $this->keyTrust);
-        if ($this->valueTrust->value < ValidationState::VALIDATED->value) {
+        $key = $this->validateEntityKey($key, $this->writeTrust);
+        $indexId = $this->normalizeEntityKey($key, $this->writeTrust);
+        if ($this->writeTrust->value < ValidationState::VALIDATED->value) {
             $value = $this->validateEntityValueFn($value, $key);
         }
 
         $this->data[$indexId] = new KeyValuePair($key, $value);
-        $this->lastStoredIndex = $indexId;
         return $this;
     }
 
     /**
      * @param string $key
-     * @param ValidationState $trust
      * @return string
      */
-    final protected function indexKey(string $key, ValidationState $trust): string
+    final protected function indexKey(string $key): string
     {
-        return $this->normalizeEntityKey($this->validateEntityKey($key, $trust), $trust);
+        return $this->normalizeEntityKey($this->validateEntityKey($key, $this->accessTrust), $this->accessTrust);
     }
 
     /**
      * @param string $key
-     * @param ValidationState $trust
      * @return KeyValuePair|null
      */
-    protected function getKeyValue(string $key, ValidationState $trust): ?KeyValuePair
+    final public function get(string $key): ?KeyValuePair
     {
-        return $this->data[$this->indexKey($key, $trust)] ?? null;
+        return $this->data[$this->indexKey($key)] ?? null;
     }
 
     /**
      * @param string $key
-     * @param ValidationState $trust
      * @return $this
      */
-    protected function deleteKeyValue(string $key, ValidationState $trust): static
+    protected function deleteKeyValue(string $key): static
     {
-        $key = $this->indexKey($key, $trust);
+        $key = $this->indexKey($key);
         if (isset($this->data[$key])) {
             unset($this->data[$key]);
         }
@@ -125,12 +132,11 @@ abstract class AbstractHttpData implements \IteratorAggregate
 
     /**
      * @param string $key
-     * @param ValidationState $trust
      * @return bool
      */
-    final public function has(string $key, ValidationState $trust): bool
+    final public function has(string $key): bool
     {
-        return array_key_exists($this->indexKey($key, $trust), $this->data);
+        return array_key_exists($this->indexKey($key), $this->data);
     }
 
     /**
@@ -160,5 +166,18 @@ abstract class AbstractHttpData implements \IteratorAggregate
     final public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->data);
+    }
+
+    /**
+     * @param string $value
+     * @return int
+     */
+    protected function calcLength(string $value): int
+    {
+        if ($this->valueCharset === Charset::UTF8 && $this->countLengthUtf8) {
+            return mb_strlen($value, "UTF-8");
+        }
+
+        return strlen($value);
     }
 }
