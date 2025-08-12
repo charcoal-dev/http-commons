@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Enums;
 
 /**
- * Class HttpHeaderKeySpec
+ * Class HttpHeaderKeyPolicy
  * @package Charcoal\Http\Commons\Enums
  */
 enum HttpHeaderKeyPolicy
