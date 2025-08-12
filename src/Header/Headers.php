@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Data\Header;
+namespace Charcoal\Http\Commons\Header;
 
 use Charcoal\Base\Enums\Charset;
 use Charcoal\Base\Enums\ValidationState;
@@ -60,7 +60,7 @@ class Headers extends AbstractHttpData
     /**
      * @throws InvalidHeaderValueException
      */
-    protected function validateEntityValueFn(mixed $value, string $name): int|string|float|bool|null|array
+    protected function validateEntityValueFn(mixed $value, string $name): string
     {
         if (!is_string($value)) {
             throw new InvalidHeaderValueException("Header value must be a string", $name);
@@ -70,7 +70,11 @@ class Headers extends AbstractHttpData
             throw new InvalidHeaderValueException("Header value contains invalid characters", $name);
         }
 
-        $length = $this->calcLength($value);
+        $length = match ($this->valueCharset) {
+            Charset::ASCII => strlen($value),
+            Charset::UTF8 => mb_strlen($value, "UTF-8"),
+        };
+
         if ($length > $this->valueMaxLength) {
             if (!$this->valueOverflowTrim) {
                 throw new InvalidHeaderValueException("Header value exceeds maximum length", $name);
