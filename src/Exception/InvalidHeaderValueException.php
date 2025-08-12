@@ -15,8 +15,8 @@ namespace Charcoal\Http\Commons\Exception;
 class InvalidHeaderValueException extends HttpException
 {
     public function __construct(
-        string                 $message = "",
-        public readonly string $name,
+        string                 $message,
+        public readonly string $header,
         int                    $code = 0,
         \Throwable             $previous = null)
     {
