@@ -13,7 +13,6 @@ use Charcoal\Base\Contracts\Charsets\UnicodeLanguageRangeInterface;
 use Charcoal\Base\Contracts\Vectors\StringVectorInterface;
 use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
-use Charcoal\Buffers\AbstractByteArray;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
 use Charcoal\Http\Commons\Enums\HttpParamKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidParamKeyException;
@@ -97,7 +96,6 @@ class Payload extends ValidatingDataset
                     $value instanceof \BackedEnum => $value->value,
                     $value instanceof \UnitEnum => $value->name,
                     $value instanceof \Stringable => (string)$value,
-                    $value instanceof AbstractByteArray => "0x" . $value->toBase16(),
                     $value instanceof StringVectorInterface => $value->getArray(),
                     default => null,
                 };
