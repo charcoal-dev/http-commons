@@ -1,16 +1,23 @@
 <?php
-/*
- * This file is a part of "charcoal-dev/http-commons" package.
- * https://github.com/charcoal-dev/http-commons
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/http-commons/blob/master/LICENSE
+/**
+ * Part of the "charcoal-dev/http-commons" package.
+ * @link https://github.com/charcoal-dev/http-commons
  */
 
 declare(strict_types=1);
+
+namespace Charcoal\Http\Tests\Commons;
+
+use Charcoal\Base\Enums\Charset;
+use Charcoal\Base\Enums\ExceptionAction;
+use Charcoal\Base\Enums\ValidationState;
+use Charcoal\Base\Support\Data\BatchEnvelope;
+use Charcoal\Base\Support\Data\CheckedKeyValue;
+use Charcoal\Http\Commons\Data\HttpDataPolicy;
+use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
+use Charcoal\Http\Commons\Exception\InvalidHeaderValueException;
+use Charcoal\Http\Commons\Header\Headers;
+use Charcoal\Http\Commons\Header\WritableHeaders;
 
 /**
  * Class HeadersTest
@@ -18,11 +25,43 @@ declare(strict_types=1);
 class HeadersTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * @param array $seed
+     * @return Headers
+     * @throws \Charcoal\Base\Exceptions\WrappedException
+     */
+    protected static function getSeededHeaders(array $seed)
+    {
+        return new Headers(
+            static::getHeadersPolicy(),
+            HttpHeaderKeyPolicy::STRICT,
+            new BatchEnvelope($seed, ExceptionAction::Ignore)
+        );
+    }
+
+    /**
+     * @return HttpDataPolicy
+     */
+    protected static function getHeadersPolicy()
+    {
+        return new HttpDataPolicy(
+            Charset::ASCII,
+            keyMaxLength: 64,
+            keyOverflowTrim: false,
+            valueMaxLength: 2048,
+            valueOverflowTrim: false,
+            accessKeyTrust: ValidationState::VALIDATED,
+            setterKeyTrust: ValidationState::RAW,
+            valueTrust: ValidationState::RAW,
+        );
+    }
+
+    /**
      * @return void
+     * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function testReadOnlyHeaders(): void
     {
-        $headers = new \Charcoal\Http\Commons\Headers([
+        $headers = static::getSeededHeaders([
             "Content-Type" => "application/json",
             "Accept" => "json",
             "X-Charcoal-App" => "MyTestApp"
@@ -30,7 +69,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(3, $headers->count());
         foreach ($headers as $header) {
-            $this->assertInstanceOf(\Charcoal\Http\Commons\KeyValuePair::class, $header);
+            $this->assertInstanceOf(CheckedKeyValue::class, $header);
         }
 
         $this->assertEquals("MyTestApp", $headers->get("x-charcoal-app"));
@@ -39,60 +78,25 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @return void
+     * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function testWritableHeaders(): void
     {
-        $headers = new \Charcoal\Http\Commons\WritableHeaders([
-            "Content-Type" => "application/json",
-            "Accept" => "json",
-            "X-Charcoal-App" => "MyTestApp"
-        ]);
+        $headers = new WritableHeaders(
+            static::getHeadersPolicy(),
+            HttpHeaderKeyPolicy::STRICT,
+            new BatchEnvelope([
+                "Content-Type" => "application/json",
+                "Accept" => "json",
+                "X-Charcoal-App" => "MyTestApp"
+            ], ExceptionAction::Ignore));
 
-        $headers->sanitizeValues = true;
+        $this->assertCount(3, $headers);
+        $headers->set("Valid-Header", "Some valid value");
+        $this->assertCount(4, $headers);
+
+        $this->expectException(InvalidHeaderValueException::class);
         $headers->set("X-Some-Value", chr(250) . "tes" . chr(116) . chr(128));
         $this->assertEquals("test", $headers->get("x-some-value"));
-        $count = $headers->count();
-
-        $headers->validateKeys = false;
-        $headers->set("Inv@lid-Key", "test-value");
-        $this->assertEquals("test-value", $headers->get("Inv@lid-Key"));
-        $this->assertEquals($count + 1, $headers->count());
-        $count = $headers->count();
-
-        $headers->validateKeys = true;
-        $headers->set("Inv@lid-Key-2", "test-value");
-        // Verify that invalid key wasn't added:
-        $this->assertEquals($count, $headers->count());
-    }
-
-    /**
-     * @return void
-     */
-    public function testValidations(): void
-    {
-        $badHeaders = [
-            "Content-Type" => "application/json",
-            "Th&sd" => "bad-key-value",
-            "X-Charcoal-App" => "MyTestApp",
-            "X-Bad-Value" => "this has bad value " . chr(128)
-        ];
-
-        $headers1 = new \Charcoal\Http\Commons\Headers($badHeaders, validateKeys: false, sanitizeValues: false);
-        $this->assertEquals(4, $headers1->count());
-        $this->assertEquals($badHeaders["X-Bad-Value"], $headers1->get("x-bad-value"));
-        $this->assertEquals("bad-key-value", $headers1->get("th&sd"));
-        unset($headers1);
-
-        $headers2 = new \Charcoal\Http\Commons\Headers($badHeaders, validateKeys: true, sanitizeValues: false);
-        $this->assertEquals(3, $headers2->count());
-        $this->assertEquals($badHeaders["X-Bad-Value"], $headers2->get("x-bad-value"));
-        $this->assertNull($headers2->get("th&sd")); // This wasn't set
-        unset($headers2);
-
-        $headers3 = new \Charcoal\Http\Commons\Headers($badHeaders, validateKeys: true, sanitizeValues: true);
-        $this->assertEquals(3, $headers3->count());
-        // Last character was stripped by sanitizer:
-        $this->assertEquals("this has bad value ", $headers3->get("x-bad-value"));
-        $this->assertNull($headers3->get("th&sd")); // This wasn't set
     }
 }
