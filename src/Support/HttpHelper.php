@@ -10,6 +10,7 @@ namespace Charcoal\Http\Commons\Support;
 
 use Charcoal\Base\Enums\Charset;
 use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
+use Charcoal\Http\Commons\Enums\HttpParamKeyPolicy;
 
 /**
  * Class HttpHelper
@@ -41,6 +42,20 @@ class HttpHelper
         return match ($charset) {
             Charset::ASCII => preg_match('/\A[\x20-\x7E]*\z/', $value) === 1,
             Charset::UTF8 => preg_match('/\A[^\x00-\x1F\x7F\x{0080}-\x{009F}]*\z/u', $value) === 1,
+        };
+    }
+
+    /**
+     * @param string $key
+     * @param HttpParamKeyPolicy $policy
+     * @return bool
+     */
+    public static function isValidParamKey(string $key, HttpParamKeyPolicy $policy): bool
+    {
+        return match ($policy) {
+            HttpParamKeyPolicy::REGULAR => preg_match('/\A[A-Za-z0-9._-]+\z/', $key) === 1,
+            HttpParamKeyPolicy::STRICT => preg_match('/\A[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $key) === 1,
+            HttpParamKeyPolicy::UNSANITIZED => true
         };
     }
 }
