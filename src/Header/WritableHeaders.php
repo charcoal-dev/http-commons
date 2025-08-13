@@ -21,7 +21,7 @@ class WritableHeaders extends Headers
      */
     final public function set(string $name, string $value): static
     {
-        return $this->storeKeyValue($name, $value);
+        return $this->storeEntry($name, $value);
     }
 
     /**
@@ -30,7 +30,7 @@ class WritableHeaders extends Headers
      */
     final public function delete(string $name): static
     {
-        return $this->deleteKeyValue($name);
+        return $this->deleteEntry($name);
     }
 
     /**
@@ -38,6 +38,6 @@ class WritableHeaders extends Headers
      */
     final public function flush(): void
     {
-        $this->data = [];
+        $this->flushEntries();
     }
 }
