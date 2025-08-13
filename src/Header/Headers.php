@@ -30,7 +30,7 @@ class Headers extends ValidatingDataset
      * @param HttpDataPolicy $dataPolicy
      * @param HttpHeaderKeyPolicy $keyPolicy
      * @param BatchEnvelope|null $headers
-     * @throws \Throwable
+     * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function __construct(
         HttpDataPolicy                      $dataPolicy,
