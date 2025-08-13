@@ -19,4 +19,13 @@ enum HttpMethod: string
     case PUT = "PUT";
     case DELETE = "DELETE";
     case OPTIONS = "OPTIONS";
+
+    /**
+     * @param string $method
+     * @return self|null
+     */
+    public static function find(string $method): ?self
+    {
+        return self::tryFrom(strtoupper($method));
+    }
 }

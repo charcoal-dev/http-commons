@@ -26,6 +26,10 @@ readonly class UrlInfo
     public ?string $query;
     public ?string $fragment;
 
+    /**
+     * @param string $url
+     * @throws InvalidUrlException
+     */
     public function __construct(string $url)
     {
         $parsed = parse_url($url);

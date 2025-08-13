@@ -9,12 +9,13 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Body;
 
 use Charcoal\Base\Abstracts\Dataset\ValidatingDataset;
+use Charcoal\Base\Contracts\Charsets\UnicodeLanguageRangeInterface;
 use Charcoal\Base\Contracts\Vectors\StringVectorInterface;
 use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Buffers\AbstractByteArray;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
-use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
+use Charcoal\Http\Commons\Enums\HttpParamKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidParamKeyException;
 use Charcoal\Http\Commons\Exception\InvalidParamValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
@@ -27,19 +28,31 @@ use Charcoal\Http\Commons\Support\HttpHelper;
  */
 class Payload extends ValidatingDataset
 {
+    /** @var UnicodeLanguageRangeInterface[] */
+    protected array $unicodeRanges = [];
+
     /**
      * @param HttpDataPolicy $dataPolicy
-     * @param HttpHeaderKeyPolicy $keyPolicy
-     * @param BatchEnvelope|null $headers
+     * @param HttpParamKeyPolicy $keyPolicy
+     * @param BatchEnvelope|null $seed
      * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function __construct(
-        HttpDataPolicy                      $dataPolicy,
-        public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
-        ?BatchEnvelope                      $headers = null,
+        HttpDataPolicy                     $dataPolicy,
+        public readonly HttpParamKeyPolicy $keyPolicy = HttpParamKeyPolicy::STRICT,
+        ?BatchEnvelope                     $seed = null,
     )
     {
-        parent::__construct($dataPolicy, $headers);
+        parent::__construct($dataPolicy, $seed);
+    }
+
+    /**
+     * @param UnicodeLanguageRangeInterface ...$ranges
+     * @return void
+     */
+    public function setUnicodeRanges(UnicodeLanguageRangeInterface ...$ranges): void
+    {
+        $this->unicodeRanges = $ranges;
     }
 
     /**
