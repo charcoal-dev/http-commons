@@ -8,11 +8,10 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Header;
 
+use Charcoal\Base\Abstracts\Dataset\ValidatingDataset;
 use Charcoal\Base\Enums\Charset;
-use Charcoal\Base\Enums\ExceptionAction;
-use Charcoal\Base\Enums\ValidationState;
-use Charcoal\Base\Vectors\ExceptionVector;
-use Charcoal\Http\Commons\Data\AbstractHttpData;
+use Charcoal\Base\Support\Data\BatchEnvelope;
+use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
 use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidHeaderNameException;
@@ -22,30 +21,24 @@ use Charcoal\Http\Commons\Support\HttpHelper;
 /**
  * Class Headers
  * @package Charcoal\Http\Commons\Header
+ * @property HttpDataPolicy $policy
+ * @template-extends ValidatingDataset<CheckedKeyValue<string, string>>
  */
-class Headers extends AbstractHttpData
+class Headers extends ValidatingDataset
 {
     /**
      * @param HttpDataPolicy $dataPolicy
      * @param HttpHeaderKeyPolicy $keyPolicy
-     * @param ValidationState $accessTrust
-     * @param array $initialData
-     * @param ExceptionAction $initialDataValidation
-     * @param ExceptionVector|null $exceptions
-     * @param Charset $valueCharset
-     * @throws \Charcoal\Base\Exceptions\WrappedException
+     * @param BatchEnvelope|null $headers
+     * @throws \Throwable
      */
     public function __construct(
         HttpDataPolicy                      $dataPolicy,
         public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
-        ValidationState                     $accessTrust = ValidationState::RAW,
-        array                               $initialData = [],
-        ExceptionAction                     $initialDataValidation = ExceptionAction::Throw,
-        ?ExceptionVector                    $exceptions = null,
-        public Charset                      $valueCharset = Charset::ASCII,
+        ?BatchEnvelope                      $headers = null,
     )
     {
-        parent::__construct($dataPolicy, $accessTrust, $initialData, $initialDataValidation, $exceptions);
+        parent::__construct($dataPolicy, $headers);
     }
 
     /**
@@ -54,56 +47,51 @@ class Headers extends AbstractHttpData
      */
     public function get(string $name): ?string
     {
-        return $this->getKeyValue($name)?->value ?? null;
+        return $this->getEntry($name)?->value;
     }
 
     /**
+     * @param string $key
+     * @return string
      * @throws InvalidHeaderNameException
      */
-    protected function validateEntityKeyFn(string $name): string
+    protected function validateEntryKey(string $key): string
     {
-        if (!HttpHelper::isValidHeaderName($name, $this->keyPolicy)) {
-            throw new InvalidHeaderNameException("Encountered invalid header name", $name);
+        if (!HttpHelper::isValidHeaderName($key, $this->keyPolicy)) {
+            throw new InvalidHeaderNameException("Encountered invalid header name", $key);
         }
 
-        if (strlen($name) > $this->policy->keyMaxLength) {
+        if (strlen($key) > $this->policy->keyMaxLength) {
             if (!$this->policy->keyOverflowTrim) {
-                throw new InvalidHeaderNameException("Header name exceeds maximum length", $name);
+                throw new InvalidHeaderNameException("Header name exceeds maximum length", $key);
             }
 
-            return substr($name, 0, $this->policy->keyMaxLength);
+            return substr($key, 0, $this->policy->keyMaxLength);
         }
 
-        return $name;
+        return $key;
     }
 
     /**
      * @throws InvalidHeaderValueException
      */
-    protected function validateEntityValueFn(mixed $value, string $name): string
+    protected function validateEntryValue(mixed $value, string $key): string
     {
         if (!is_string($value)) {
-            throw new InvalidHeaderValueException("Header value must be a string", $name);
+            throw new InvalidHeaderValueException("Header value must be a string", $key);
         }
 
-        if (!HttpHelper::isValidHeaderValue($value, $this->valueCharset)) {
-            throw new InvalidHeaderValueException("Header value contains invalid characters", $name);
+        if (!HttpHelper::isValidHeaderValue($value, Charset::ASCII)) {
+            throw new InvalidHeaderValueException("Header value contains invalid characters", $key);
         }
 
-        $length = match ($this->valueCharset) {
-            Charset::ASCII => strlen($value),
-            Charset::UTF8 => $this->policy->countLengthUtf8 ? mb_strlen($value, "UTF-8") : strlen($value),
-        };
-
+        $length = $this->policy->strlen($value);
         if ($length > $this->policy->valueMaxLength) {
             if (!$this->policy->valueOverflowTrim) {
-                throw new InvalidHeaderValueException("Header value exceeds maximum length", $name);
+                throw new InvalidHeaderValueException("Header value exceeds maximum length", $key);
             }
 
-            return match ($this->valueCharset) {
-                Charset::ASCII => substr($value, 0, $this->policy->valueMaxLength),
-                Charset::UTF8 => mb_substr($value, 0, $this->policy->valueMaxLength, "UTF-8"),
-            };
+            return $this->policy->cutToSize($value, $this->policy->valueMaxLength);
         }
 
         return $value;

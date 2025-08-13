@@ -13,15 +13,21 @@
     }
   ],
   "require": {
-    "php": "^8.1",
-    "charcoal-dev/buffers": "^0.1.0",
-    "charcoal-dev/charset-validator": "^0.1.0"
+    "php": "^8.3",
+    "charcoal-dev/base": "^0.0.8",
+    "charcoal-dev/buffers": "^0.2.0",
+    "ext-mbstring": "*"
   },
   "autoload": {
     "psr-4": {
       "Charcoal\\Http\\Commons\\": [
         "src"
       ]
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Charcoal\\Http\\Tests\\Commons\\": "tests/"
     }
   },
   "minimum-stability": "dev"
