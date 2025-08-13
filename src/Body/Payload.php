@@ -8,16 +8,13 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Body;
 
-use Charcoal\Base\Contracts\Vectors\StringVectorProviderInterface;
-use Charcoal\Base\Enums\ExceptionAction;
-use Charcoal\Base\Enums\ValidationState;
-use Charcoal\Base\Vectors\AbstractTokenVector;
-use Charcoal\Base\Vectors\ExceptionVector;
-use Charcoal\Base\Vectors\StringVector;
+use Charcoal\Base\Abstracts\Dataset\ValidatingDataset;
+use Charcoal\Base\Contracts\Vectors\StringVectorInterface;
+use Charcoal\Base\Support\Data\BatchEnvelope;
+use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Buffers\AbstractByteArray;
-use Charcoal\Http\Commons\Data\AbstractHttpData;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
-use Charcoal\Http\Commons\Enums\HttpParamKeyPolicy;
+use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidParamKeyException;
 use Charcoal\Http\Commons\Exception\InvalidParamValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
@@ -25,59 +22,55 @@ use Charcoal\Http\Commons\Support\HttpHelper;
 /**
  * Class Payload
  * @package Charcoal\Http\Commons\Body
+ * @property HttpDataPolicy $policy
+ * @template-extends ValidatingDataset<CheckedKeyValue<string,int|string|float|bool|null|array>>
  */
-class Payload extends AbstractHttpData
+class Payload extends ValidatingDataset
 {
+    /**
+     * @param HttpDataPolicy $dataPolicy
+     * @param HttpHeaderKeyPolicy $keyPolicy
+     * @param BatchEnvelope|null $headers
+     * @throws \Charcoal\Base\Exceptions\WrappedException
+     */
     public function __construct(
-        HttpDataPolicy                     $dataPolicy,
-        public readonly HttpParamKeyPolicy $keyPolicy = HttpParamKeyPolicy::STRICT,
-        ValidationState                    $accessTrust = ValidationState::RAW,
-        array                              $initialData = [],
-        ExceptionAction                    $initialDataValidation = ExceptionAction::Throw,
-        ?ExceptionVector                   $exceptions = null,
+        HttpDataPolicy                      $dataPolicy,
+        public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
+        ?BatchEnvelope                      $headers = null,
     )
     {
-        parent::__construct($dataPolicy, $accessTrust, $initialData, $initialDataValidation, $exceptions);
+        parent::__construct($dataPolicy, $headers);
     }
 
     /**
-     * @param string $name
-     * @return int|string|float|bool|array|null
-     */
-    public function get(string $name): int|string|float|bool|null|array
-    {
-        return $this->getKeyValue($name)?->value ?? null;
-    }
-
-    /**
-     * @param string $name
+     * @param string $key
      * @return string
      * @throws InvalidParamKeyException
      */
-    protected function validateEntityKeyFn(string $name): string
+    protected function validateEntryKey(string $key): string
     {
-        if (!HttpHelper::isValidParamKey($name, $this->keyPolicy)) {
-            throw new InvalidParamKeyException("Encountered invalid payload param key", $name);
+        if (!HttpHelper::isValidParamKey($key, $this->keyPolicy)) {
+            throw new InvalidParamKeyException("Encountered invalid payload param key", $key);
         }
 
-        if (strlen($name) > $this->policy->keyMaxLength) {
+        if (strlen($key) > $this->policy->keyMaxLength) {
             if (!$this->policy->keyOverflowTrim) {
-                throw new InvalidParamKeyException("Payload param keys exceeds maximum length", $name);
+                throw new InvalidParamKeyException("Payload param keys exceeds maximum length", $key);
             }
 
-            return substr($name, 0, $this->policy->keyMaxLength);
+            return substr($key, 0, $this->policy->keyMaxLength);
         }
 
-        return $name;
+        return $key;
     }
 
     /**
      * @param mixed $value
-     * @param string $name
+     * @param string $key
      * @return int|string|float|bool|array|null
      * @throws InvalidParamValueException
      */
-    protected function validateEntityValueFn(mixed $value, string $name): int|string|float|bool|null|array
+    protected function validateEntryValue(mixed $value, string $key): int|string|float|bool|null|array
     {
         if (is_scalar($value) || is_null($value)) {
             return $value;
@@ -92,9 +85,7 @@ class Payload extends AbstractHttpData
                     $value instanceof \UnitEnum => $value->name,
                     $value instanceof \Stringable => (string)$value,
                     $value instanceof AbstractByteArray => "0x" . $value->toBase16(),
-                    $value instanceof StringVector,
-                        $value instanceof AbstractTokenVector,
-                        $value instanceof StringVectorProviderInterface => $value->getArray(),
+                    $value instanceof StringVectorInterface => $value->getArray(),
                     default => null,
                 };
             }
@@ -110,11 +101,11 @@ class Payload extends AbstractHttpData
                 throw new InvalidParamValueException(sprintf(
                     'Cannot set %s as HTTP payload param "%s"', (is_object($value) ?
                     sprintf('object of type "%s"', get_class($value)) : "Array"
-                ), $name), $name, previous: $e);
+                ), $key), $key, previous: $e);
             }
         }
 
         throw new InvalidParamValueException(sprintf(
-            'Cannot set "%s" as HTTP payload param "%s"', get_debug_type($value), $name), $name);
+            'Cannot set "%s" as HTTP payload param "%s"', get_debug_type($value), $key), $key);
     }
 }

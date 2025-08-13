@@ -16,12 +16,21 @@ class WritablePayload extends Payload
 {
     /**
      * @param string $name
+     * @return int|string|float|bool|array|null
+     */
+    public function get(string $name): int|string|float|bool|null|array
+    {
+        return $this->getEntry($name)?->value ?? null;
+    }
+
+    /**
+     * @param string $name
      * @param int|string|float|bool|array|null $value
      * @return $this
      */
     final public function set(string $name, int|string|float|bool|null|array $value): static
     {
-        return $this->storeKeyValue($name, $value);
+        return $this->storeEntry($name, $value);
     }
 
     /**
@@ -30,7 +39,7 @@ class WritablePayload extends Payload
      */
     final public function delete(string $name): static
     {
-        return $this->deleteKeyValue($name);
+        return $this->deleteEntry($name);
     }
 
     /**
@@ -38,6 +47,6 @@ class WritablePayload extends Payload
      */
     final public function flush(): void
     {
-        $this->data = [];
+        $this->flushEntries();
     }
 }
