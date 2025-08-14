@@ -19,4 +19,12 @@ enum AuthScheme implements AuthSchemeEnumInterface
     case Basic;
     case Digest;
     case Custom;
+
+    /**
+     * @return string
+     */
+    public function scheme(): string
+    {
+        return strtolower($this->name);
+    }
 }

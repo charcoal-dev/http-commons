@@ -14,4 +14,5 @@ namespace Charcoal\Http\Commons\Contracts;
  */
 interface AuthSchemeEnumInterface extends \UnitEnum
 {
+    public function scheme(): string;
 }
