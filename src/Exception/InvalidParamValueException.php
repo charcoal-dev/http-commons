@@ -12,7 +12,7 @@ namespace Charcoal\Http\Commons\Exception;
  * Class InvalidParamValueException
  * @package Charcoal\Http\Commons\Exception
  */
-class InvalidParamValueException extends \Exception implements HttpDataAppendExceptionInterface
+class InvalidParamValueException extends \Exception
 {
     public function __construct(
         string                 $message,

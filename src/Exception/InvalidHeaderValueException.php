@@ -12,7 +12,7 @@ namespace Charcoal\Http\Commons\Exception;
  * Class InvalidHeaderValueException
  * @package Charcoal\Http\Commons\Exception
  */
-class InvalidHeaderValueException extends HttpException implements HttpDataAppendExceptionInterface
+class InvalidHeaderValueException extends HttpException
 {
     public function __construct(
         string                 $message,
