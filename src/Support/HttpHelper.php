@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Support;
 
 use Charcoal\Base\Enums\Charset;
-use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
-use Charcoal\Http\Commons\Enums\HttpParamKeyPolicy;
+use Charcoal\Http\Commons\Enums\HeaderKeyPolicy;
+use Charcoal\Http\Commons\Enums\ParamKeyPolicy;
 
 /**
  * Class HttpHelper
@@ -20,15 +20,15 @@ class HttpHelper
 {
     /**
      * @param string $name
-     * @param HttpHeaderKeyPolicy $policy
+     * @param HeaderKeyPolicy $policy
      * @return bool
      */
-    public static function isValidHeaderName(string $name, HttpHeaderKeyPolicy $policy): bool
+    public static function isValidHeaderName(string $name, HeaderKeyPolicy $policy): bool
     {
         return match ($policy) {
-            HttpHeaderKeyPolicy::RFC7230 => (bool)preg_match('/^[!#$%&\'*+\-.^_`|~0-9A-Za-z]+$/', $name),
-            HttpHeaderKeyPolicy::STRICT => (bool)preg_match('/^[\w\-.]+$/', $name),
-            HttpHeaderKeyPolicy::UNSANITIZED => true
+            HeaderKeyPolicy::RFC7230 => (bool)preg_match('/^[!#$%&\'*+\-.^_`|~0-9A-Za-z]+$/', $name),
+            HeaderKeyPolicy::STRICT => (bool)preg_match('/^[\w\-.]+$/', $name),
+            HeaderKeyPolicy::UNSANITIZED => true
         };
     }
 
@@ -47,15 +47,15 @@ class HttpHelper
 
     /**
      * @param string $key
-     * @param HttpParamKeyPolicy $policy
+     * @param ParamKeyPolicy $policy
      * @return bool
      */
-    public static function isValidParamKey(string $key, HttpParamKeyPolicy $policy): bool
+    public static function isValidParamKey(string $key, ParamKeyPolicy $policy): bool
     {
         return match ($policy) {
-            HttpParamKeyPolicy::REGULAR => preg_match('/\A[A-Za-z0-9._-]+\z/', $key) === 1,
-            HttpParamKeyPolicy::STRICT => preg_match('/\A[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $key) === 1,
-            HttpParamKeyPolicy::UNSANITIZED => true
+            ParamKeyPolicy::REGULAR => preg_match('/\A[A-Za-z0-9._-]+\z/', $key) === 1,
+            ParamKeyPolicy::STRICT => preg_match('/\A[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\z/', $key) === 1,
+            ParamKeyPolicy::UNSANITIZED => true
         };
     }
 }

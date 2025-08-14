@@ -14,7 +14,7 @@ use Charcoal\Base\Enums\ValidationState;
 use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
-use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
+use Charcoal\Http\Commons\Enums\HeaderKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidHeaderValueException;
 use Charcoal\Http\Commons\Header\Headers;
 use Charcoal\Http\Commons\Header\WritableHeaders;
@@ -33,7 +33,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
     {
         return new Headers(
             static::getHeadersPolicy(),
-            HttpHeaderKeyPolicy::STRICT,
+            HeaderKeyPolicy::STRICT,
             new BatchEnvelope($seed, ExceptionAction::Ignore)
         );
     }
@@ -84,7 +84,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
     {
         $headers = new WritableHeaders(
             static::getHeadersPolicy(),
-            HttpHeaderKeyPolicy::STRICT,
+            HeaderKeyPolicy::STRICT,
             new BatchEnvelope([
                 "Content-Type" => "application/json",
                 "Accept" => "json",

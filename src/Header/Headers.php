@@ -13,7 +13,7 @@ use Charcoal\Base\Enums\Charset;
 use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
-use Charcoal\Http\Commons\Enums\HttpHeaderKeyPolicy;
+use Charcoal\Http\Commons\Enums\HeaderKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidHeaderNameException;
 use Charcoal\Http\Commons\Exception\InvalidHeaderValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
@@ -28,14 +28,14 @@ class Headers extends ValidatingDataset
 {
     /**
      * @param HttpDataPolicy $dataPolicy
-     * @param HttpHeaderKeyPolicy $keyPolicy
+     * @param HeaderKeyPolicy $keyPolicy
      * @param BatchEnvelope|null $headers
      * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function __construct(
-        HttpDataPolicy                      $dataPolicy,
-        public readonly HttpHeaderKeyPolicy $keyPolicy = HttpHeaderKeyPolicy::STRICT,
-        ?BatchEnvelope                      $headers = null,
+        HttpDataPolicy                  $dataPolicy,
+        public readonly HeaderKeyPolicy $keyPolicy = HeaderKeyPolicy::STRICT,
+        ?BatchEnvelope                  $headers = null,
     )
     {
         parent::__construct($dataPolicy, $headers);

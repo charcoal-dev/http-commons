@@ -9,12 +9,12 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Enums;
 
 /**
- * Class HttpParamKeyPolicy
+ * Class HttpHeaderKeyPolicy
  * @package Charcoal\Http\Commons\Enums
  */
-enum HttpParamKeyPolicy
+enum HeaderKeyPolicy
 {
     case STRICT;
-    case REGULAR;
+    case RFC7230;
     case UNSANITIZED;
 }

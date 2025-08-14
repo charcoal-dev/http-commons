@@ -14,7 +14,7 @@ use Charcoal\Base\Contracts\Vectors\StringVectorInterface;
 use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
-use Charcoal\Http\Commons\Enums\HttpParamKeyPolicy;
+use Charcoal\Http\Commons\Enums\ParamKeyPolicy;
 use Charcoal\Http\Commons\Exception\InvalidParamKeyException;
 use Charcoal\Http\Commons\Exception\InvalidParamValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
@@ -32,14 +32,14 @@ class Payload extends ValidatingDataset
 
     /**
      * @param HttpDataPolicy $dataPolicy
-     * @param HttpParamKeyPolicy $keyPolicy
+     * @param ParamKeyPolicy $keyPolicy
      * @param BatchEnvelope|null $seed
      * @throws \Charcoal\Base\Exceptions\WrappedException
      */
     public function __construct(
-        HttpDataPolicy                     $dataPolicy,
-        public readonly HttpParamKeyPolicy $keyPolicy = HttpParamKeyPolicy::STRICT,
-        ?BatchEnvelope                     $seed = null,
+        HttpDataPolicy                 $dataPolicy,
+        public readonly ParamKeyPolicy $keyPolicy = ParamKeyPolicy::STRICT,
+        ?BatchEnvelope                 $seed = null,
     )
     {
         parent::__construct($dataPolicy, $seed);
