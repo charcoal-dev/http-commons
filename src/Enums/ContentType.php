@@ -24,7 +24,7 @@ enum ContentType: string implements ContentTypeEnumInterface
      * @param string $header
      * @return self|null
      */
-    public function check(string $header): ?self
+    public static function find(string $header): ?self
     {
         return match (strtolower(trim(explode(";", $header)[0]))) {
             "text/plain" => self::TEXT,
