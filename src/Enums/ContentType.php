@@ -19,4 +19,18 @@ enum ContentType: string implements ContentTypeEnumInterface
     case TEXT = "text/plain";
     case HTML = "text/html";
     case JSON = "application/json";
+
+    /**
+     * @param string $header
+     * @return self|null
+     */
+    public function check(string $header): ?self
+    {
+        return match (strtolower(trim(explode(";", $header)[0]))) {
+            "text/plain" => self::TEXT,
+            "text/html" => self::HTML,
+            "application/json" => self::JSON,
+            default => null,
+        };
+    }
 }
