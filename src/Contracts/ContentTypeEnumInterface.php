@@ -12,6 +12,6 @@ namespace Charcoal\Http\Commons\Contracts;
  * Interface ContentTypeEnumInterface
  * @package Charcoal\Http\Commons\Contracts
  */
-interface ContentTypeEnumInterface extends \UnitEnum
+interface ContentTypeEnumInterface extends \BackedEnum
 {
 }
