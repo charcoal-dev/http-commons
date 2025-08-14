@@ -14,17 +14,9 @@ use Charcoal\Http\Commons\Contracts\AuthSchemeEnumInterface;
  * Class AuthScheme
  * @package Charcoal\Http\Router\Enums
  */
-enum AuthScheme implements AuthSchemeEnumInterface
+enum AuthScheme: string implements AuthSchemeEnumInterface
 {
-    case Basic;
-    case Digest;
-    case Custom;
-
-    /**
-     * @return string
-     */
-    public function scheme(): string
-    {
-        return strtolower($this->name);
-    }
+    case Basic = "basic";
+    case Digest = "digest";
+    case Custom = "custom";
 }
