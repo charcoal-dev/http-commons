@@ -16,9 +16,19 @@ use Charcoal\Http\Commons\Contracts\ContentTypeEnumInterface;
  */
 enum ContentType: string implements ContentTypeEnumInterface
 {
-    case TEXT = "text/plain";
-    case HTML = "text/html";
-    case JSON = "application/json";
+    case Text = "text/plain";
+    case Html = "text/html";
+    case Stylesheet = "text/css";
+    case Json = "application/json";
+    case Xml = "application/xml";
+    case FormSubmit = "application/x-www-form-urlencoded";
+    case ZipArchive = "application/zip";
+    case OctetStream = "application/octet-stream";
+    case Javascript = "application/javascript";
+    case ImageJpeg = "image/jpeg";
+    case ImageGif = "image/gif";
+    case ImagePng = "image/png";
+    case DocumentPdf = "application/pdf";
 
     /**
      * @param string $header
@@ -26,11 +36,15 @@ enum ContentType: string implements ContentTypeEnumInterface
      */
     public static function find(string $header): ?self
     {
-        return match (strtolower(trim(explode(";", $header)[0]))) {
-            "text/plain" => self::TEXT,
-            "text/html" => self::HTML,
-            "application/json" => self::JSON,
-            default => null,
-        };
+        $header = strtolower(trim(explode(";", $header)[0]));
+        $type = self::tryFrom($header);
+        if (!$type) {
+            return match ($header) {
+                "text/javascript" => self::Javascript,
+                default => null,
+            };
+        }
+
+        return $type;
     }
 }
