@@ -52,8 +52,6 @@ class CredentialFilepath implements CredentialObjectInterface
     {
         $this->validateFileIsReadable();
         $this->validateCredential();
-
-
         $this->validated = true;
     }
 
@@ -164,11 +162,8 @@ class CredentialFilepath implements CredentialObjectInterface
      */
     protected function readFromFile(): string
     {
+        var_dump("Reading From File !!!");
         $basename = basename($this->filepath);
-        if (!$this->validated) {
-            $this->validate();
-        }
-
         $read = file_get_contents($this->filepath, length: static::MAX_LENGTH);
         if (!$read) {
             throw new CredentialFileException($this,

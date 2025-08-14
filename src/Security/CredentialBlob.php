@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Security;
 
-use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Http\Commons\Enums\Security\CredentialEncoding;
 use Charcoal\Http\Commons\Exception\CredentialFileException;
 
@@ -19,8 +18,6 @@ use Charcoal\Http\Commons\Exception\CredentialFileException;
 class CredentialBlob extends CredentialFilepath
 {
     private ?string $loaded = null;
-
-    use NoDumpTrait;
 
     /**
      * @param string $filepath
