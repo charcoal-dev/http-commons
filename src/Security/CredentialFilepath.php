@@ -162,7 +162,6 @@ class CredentialFilepath implements CredentialObjectInterface
      */
     protected function readFromFile(): string
     {
-        var_dump("Reading From File !!!");
         $basename = basename($this->filepath);
         $read = file_get_contents($this->filepath, length: static::MAX_LENGTH);
         if (!$read) {
