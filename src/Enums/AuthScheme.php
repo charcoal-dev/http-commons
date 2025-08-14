@@ -16,7 +16,7 @@ use Charcoal\Http\Commons\Contracts\AuthSchemeEnumInterface;
  */
 enum AuthScheme: string implements AuthSchemeEnumInterface
 {
-    case Basic = "basic";
-    case Digest = "digest";
-    case Custom = "custom";
+    case Basic = "Basic";
+    case Digest = "Digest";
+    case Custom = "Custom";
 }
