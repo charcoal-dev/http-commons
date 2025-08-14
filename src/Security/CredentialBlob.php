@@ -18,6 +18,7 @@ use Charcoal\Http\Commons\Exception\CredentialFileException;
 class CredentialBlob extends CredentialFilepath
 {
     private ?string $loaded = null;
+    private ?int $length = null;
 
     /**
      * @param string $filepath
@@ -48,6 +49,7 @@ class CredentialBlob extends CredentialFilepath
         $contents = parent::validateCredential();
         if ($this->loadOnInitialize) {
             $this->loaded = $contents;
+            $this->length = strlen($this->loaded);
         }
 
         return null;
@@ -62,6 +64,7 @@ class CredentialBlob extends CredentialFilepath
         $data["loadOnInitialize"] = $this->loadOnInitialize;
         $data["unloadOnSerialize"] = $this->unloadOnSerialize;
         $data["loaded"] = $this->unloadOnSerialize ? null : $this->loaded;
+        $data["length"] = $this->unloadOnSerialize ? null : $this->length;
         return $data;
     }
 
@@ -73,6 +76,7 @@ class CredentialBlob extends CredentialFilepath
     public function __unserialize(array $data): void
     {
         $this->loaded = $data["loaded"];
+        $this->length = $data["length"];
         $this->loadOnInitialize = $data["loadOnInitialize"];
         $this->unloadOnSerialize = $data["unloadOnSerialize"];
         if ($data["revalidateOnUnserialize"]) {
@@ -93,6 +97,20 @@ class CredentialBlob extends CredentialFilepath
         }
 
         $this->loaded = $this->readFromFile();
+        $this->length = strlen($this->loaded);
         return $this->loaded;
+    }
+
+    /**
+     * @return int
+     * @throws CredentialFileException
+     */
+    public function getSize(): int
+    {
+        if ($this->loaded === null) {
+            $this->getBlob();
+        }
+
+        return $this->length;
     }
 }
