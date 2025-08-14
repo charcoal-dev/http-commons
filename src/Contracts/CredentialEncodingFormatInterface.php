@@ -8,6 +8,10 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Contracts;
 
-interface CertificateEncodingFormatInterface
+/**
+ * Interface CredentialEncodingFormatInterface
+ * @package Charcoal\Http\Commons\Contracts
+ */
+interface CredentialEncodingFormatInterface
 {
 }

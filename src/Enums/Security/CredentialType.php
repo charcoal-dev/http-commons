@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Enums\Tls;
+namespace Charcoal\Http\Commons\Enums\Security;
 
 /**
- * Class CertificateType
- * @package Charcoal\Http\Commons\Enums\Tls
+ * Class CredentialType
+ * @package Charcoal\Http\Commons\Enums\Security
  */
-enum CertificateType
+enum CredentialType
 {
     case Certificate;
     case PrivateKey;
