@@ -16,6 +16,6 @@ documentation website:
 
 **Related Libraries:**
 
-[https://charcoal.dev/libs/http-router](https://charcoal.dev/libs/http-router)
+[https://github.com/charcoal-dev/http-router](https://github.com/charcoal-dev/http-router)
 
-[https://charcoal.dev/libs/http-client](https://charcoal.dev/libs/http-client)
+[https://github.com/charcoal-dev/http-client](https://github.com/charcoal-dev/http-client)
