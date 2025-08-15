@@ -15,7 +15,7 @@ use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
 use Charcoal\Http\Commons\Enums\HeaderKeyPolicy;
-use Charcoal\Http\Commons\Exception\InvalidHeaderValueException;
+use Charcoal\Http\Commons\Exceptions\InvalidHeaderValueException;
 use Charcoal\Http\Commons\Header\Headers;
 use Charcoal\Http\Commons\Header\WritableHeaders;
 

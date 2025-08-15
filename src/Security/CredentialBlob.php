@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Security;
 
 use Charcoal\Http\Commons\Enums\Security\CredentialEncoding;
-use Charcoal\Http\Commons\Exception\CredentialFileException;
+use Charcoal\Http\Commons\Exceptions\CredentialFileException;
 
 /**
  * Class CredentialBlob

@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Exception;
+namespace Charcoal\Http\Commons\Exceptions;
 
 /**
- * Class InvalidHeaderNameException
- * @package Charcoal\Http\Commons\Exception
+ * Class InvalidHeaderValueException
+ * @package Charcoal\Http\Commons\Exceptions
  */
-class InvalidHeaderNameException extends HeaderException
+class InvalidHeaderValueException extends HttpException
 {
     public function __construct(
         string                 $message,

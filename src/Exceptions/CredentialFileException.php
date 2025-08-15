@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Exception;
+namespace Charcoal\Http\Commons\Exceptions;
 
 use Charcoal\Http\Commons\Security\CredentialFilepath;
 
 /**
  * Class CredentialFileException
- * @package Charcoal\Http\Commons\Exception
+ * @package Charcoal\Http\Commons\Exceptions
  */
 class CredentialFileException extends \Exception
 {

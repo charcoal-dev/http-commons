@@ -15,8 +15,8 @@ use Charcoal\Base\Support\Data\BatchEnvelope;
 use Charcoal\Base\Support\Data\CheckedKeyValue;
 use Charcoal\Http\Commons\Data\HttpDataPolicy;
 use Charcoal\Http\Commons\Enums\ParamKeyPolicy;
-use Charcoal\Http\Commons\Exception\InvalidParamKeyException;
-use Charcoal\Http\Commons\Exception\InvalidParamValueException;
+use Charcoal\Http\Commons\Exceptions\InvalidParamKeyException;
+use Charcoal\Http\Commons\Exceptions\InvalidParamValueException;
 use Charcoal\Http\Commons\Support\HttpHelper;
 
 /**

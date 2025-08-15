@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Exception;
+namespace Charcoal\Http\Commons\Exceptions;
 
 /**
  * Class HttpException
- * @package Charcoal\Http\Commons\Exception
+ * @package Charcoal\Http\Commons\Exceptions
  */
 class HttpException extends \Exception
 {

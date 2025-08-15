@@ -6,17 +6,17 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Exception;
+namespace Charcoal\Http\Commons\Exceptions;
 
 /**
- * Class InvalidParamKeyException
- * @package Charcoal\Http\Commons\Exception
+ * Class InvalidHeaderNameException
+ * @package Charcoal\Http\Commons\Exceptions
  */
-class InvalidParamKeyException extends \Exception
+class InvalidHeaderNameException extends HeaderException
 {
     public function __construct(
         string                 $message,
-        public readonly string $param,
+        public readonly string $header,
         int                    $code = 0,
         \Throwable             $previous = null)
     {

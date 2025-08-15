@@ -6,17 +6,17 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Exception;
+namespace Charcoal\Http\Commons\Exceptions;
 
 /**
- * Class InvalidHeaderValueException
- * @package Charcoal\Http\Commons\Exception
+ * Class InvalidParamValueException
+ * @package Charcoal\Http\Commons\Exceptions
  */
-class InvalidHeaderValueException extends HttpException
+class InvalidParamValueException extends \Exception
 {
     public function __construct(
         string                 $message,
-        public readonly string $header,
+        public readonly string $param,
         int                    $code = 0,
         \Throwable             $previous = null)
     {

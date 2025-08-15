@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Data;
 
-use Charcoal\Http\Commons\Exception\InvalidUrlException;
+use Charcoal\Http\Commons\Exceptions\InvalidUrlException;
 
 /**
  * Class UrlInfo

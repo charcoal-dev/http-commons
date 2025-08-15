@@ -12,7 +12,7 @@ use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Http\Commons\Contracts\CredentialObjectInterface;
 use Charcoal\Http\Commons\Enums\Security\CredentialEncoding;
 use Charcoal\Http\Commons\Enums\Security\CredentialType;
-use Charcoal\Http\Commons\Exception\CredentialFileException;
+use Charcoal\Http\Commons\Exceptions\CredentialFileException;
 use Charcoal\Http\Commons\Support\SecurityHelper;
 
 /**

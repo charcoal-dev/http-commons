@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Exception;
+namespace Charcoal\Http\Commons\Exceptions;
 
 /**
- * Class InvalidParamValueException
- * @package Charcoal\Http\Commons\Exception
+ * Class InvalidParamKeyException
+ * @package Charcoal\Http\Commons\Exceptions
  */
-class InvalidParamValueException extends \Exception
+class InvalidParamKeyException extends \Exception
 {
     public function __construct(
         string                 $message,
