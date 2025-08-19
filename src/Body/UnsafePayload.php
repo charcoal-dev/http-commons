@@ -11,6 +11,7 @@ namespace Charcoal\Http\Commons\Body;
 use Charcoal\Base\Charsets\Ascii;
 use Charcoal\Base\Charsets\Utf8;
 use Charcoal\Base\Enums\Charset;
+use Charcoal\Http\Commons\Enums\ParamKeyPolicy;
 use Charcoal\Http\Commons\Support\HttpHelper;
 
 /**
@@ -82,7 +83,7 @@ class UnsafePayload extends Payload
      */
     public function getUnrecognizedKeys(string ...$keys): array
     {
-        return array_values(array_diff($this->getStoredKeys(), $keys));
+        return array_values(array_diff(array_keys($this->dataset), $keys));
     }
 
     /**
@@ -131,7 +132,7 @@ class UnsafePayload extends Payload
                     continue;
                 }
 
-                if (!HttpHelper::isValidParamKey($key, $this->keyPolicy)) {
+                if (!HttpHelper::isValidParamKey($key, ParamKeyPolicy::REGULAR)) {
                     continue;
                 }
 

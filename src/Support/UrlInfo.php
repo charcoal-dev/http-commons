@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Data;
+namespace Charcoal\Http\Commons\Support;
 
 use Charcoal\Http\Commons\Exceptions\InvalidUrlException;
 
 /**
  * Class UrlInfo
- * @package Charcoal\Http\Commons
+ * @package Charcoal\Http\Commons\Support
  */
 readonly class UrlInfo
 {
