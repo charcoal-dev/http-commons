@@ -16,7 +16,7 @@ class UrlInfoTest extends \PHPUnit\Framework\TestCase
      */
     public function testUrlInfo(): void
     {
-        $url1 = new \Charcoal\Http\Commons\Data\UrlInfo("https://charcoal.dev/docs/http/commons?a=1&b=false");
+        $url1 = new \Charcoal\Http\Commons\Support\UrlInfo("https://charcoal.dev/docs/http/commons?a=1&b=false");
         $this->assertEquals("https", $url1->scheme);
         $this->assertEquals("charcoal.dev", $url1->host);
         $this->assertEquals("/docs/http/commons", $url1->path);
@@ -26,7 +26,7 @@ class UrlInfoTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($url1->password);
         unset($url1);
 
-        $url2 = new \Charcoal\Http\Commons\Data\UrlInfo("/docs/http/commons?a=true&b=2#testFrag");
+        $url2 = new \Charcoal\Http\Commons\Support\UrlInfo("/docs/http/commons?a=true&b=2#testFrag");
         $this->assertNull($url2->scheme);
         $this->assertNull($url2->host);
         $this->assertEquals("/docs/http/commons", $url2->path);
@@ -36,7 +36,7 @@ class UrlInfoTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($url2->password);
         unset($url2);
 
-        $url3 = new \Charcoal\Http\Commons\Data\UrlInfo("ftp://charcoal:secret@charcoal.dev");
+        $url3 = new \Charcoal\Http\Commons\Support\UrlInfo("ftp://charcoal:secret@charcoal.dev");
         $this->assertEquals("ftp", $url3->scheme);
         $this->assertEquals("charcoal.dev", $url3->host);
         $this->assertEquals("charcoal", $url3->username);

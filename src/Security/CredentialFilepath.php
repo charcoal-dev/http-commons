@@ -64,7 +64,8 @@ class CredentialFilepath implements CredentialObjectInterface
         $contents = $this->readFromFile();
         $type = match ($this->encoding) {
             CredentialEncoding::PEM => $this->resolveTypeFromPEM($contents),
-            CredentialEncoding::DER => $this->resolveTypeFromDER($contents),
+            CredentialEncoding::DER =>
+            throw new CredentialFileException($this, "DER encoding support is not implemented", 170),
         };
 
         if (!isset($this->type)) {
@@ -96,17 +97,6 @@ class CredentialFilepath implements CredentialObjectInterface
         }
 
         return $type;
-    }
-
-    /**
-     * @param string $contents
-     * @return CredentialType
-     * @throws CredentialFileException
-     * @noinspection PhpUnusedParameterInspection
-     */
-    protected function resolveTypeFromDER(string $contents): CredentialType
-    {
-        throw new CredentialFileException($this, "DER encoding support is not implemented", 170);
     }
 
     /**
