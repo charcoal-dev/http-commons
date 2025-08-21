@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Enums;
 
 /**
- * Class HttpMethod
- * @package Charcoal\Http\Commons\Enums
+ * Enum representing HTTP methods as string values.
+ * Includes common methods such as GET, POST, PUT, DELETE, and OPTIONS.
  */
 enum HttpMethod: string
 {
@@ -18,14 +18,15 @@ enum HttpMethod: string
     case POST = "POST";
     case PUT = "PUT";
     case DELETE = "DELETE";
+    case HEAD = "HEAD";
+    case PATCH = "PATCH";
     case OPTIONS = "OPTIONS";
 
     /**
-     * @param string $method
-     * @return self|null
+     * Case-insensitive method lookup.
      */
     public static function find(string $method): ?self
     {
-        return self::tryFrom(strtoupper($method));
+        return self::tryFrom(strtoupper(trim($method)));
     }
 }
