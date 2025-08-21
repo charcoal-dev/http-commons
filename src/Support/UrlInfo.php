@@ -8,13 +8,12 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Support;
 
-use Charcoal\Http\Commons\Exceptions\InvalidUrlException;
-
 /**
- * Class UrlInfo
- * @package Charcoal\Http\Commons\Support
+ * This class parses a given URL string into its individual components
+ * such as scheme, host, port, username, password, path, query, and fragment.
+ * The original URL string is also preserved for reference.
  */
-readonly class UrlInfo
+final readonly class UrlInfo
 {
     public string $complete;
     public ?string $scheme;
@@ -28,13 +27,12 @@ readonly class UrlInfo
 
     /**
      * @param string $url
-     * @throws InvalidUrlException
      */
     public function __construct(string $url)
     {
         $parsed = parse_url($url);
         if (!is_array($parsed) || !$parsed) {
-            throw new InvalidUrlException("Invalid URL");
+            throw new \InvalidArgumentException("Invalid URL");
         }
 
         $this->complete = $url;
