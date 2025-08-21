@@ -11,8 +11,7 @@ namespace Charcoal\Http\Commons\Body;
 use Charcoal\Base\Charsets\Ascii;
 use Charcoal\Base\Charsets\Utf8;
 use Charcoal\Base\Enums\Charset;
-use Charcoal\Http\Commons\Enums\ParamKeyPolicy;
-use Charcoal\Http\Commons\Support\HttpHelper;
+use Charcoal\Http\Commons\Enums\ParamKeyValidation;
 
 /**
  * Class UnsafePayload
@@ -132,7 +131,7 @@ class UnsafePayload extends Payload
                     continue;
                 }
 
-                if (!HttpHelper::isValidParamKey($key, ParamKeyPolicy::REGULAR)) {
+                if (!ParamKeyValidation::REGULAR->isValidKey($key)) {
                     continue;
                 }
 

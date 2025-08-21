@@ -11,10 +11,10 @@ namespace Charcoal\Http\Commons\Enums;
 use Charcoal\Http\Commons\Contracts\AuthSchemeEnumInterface;
 
 /**
- * Class AuthScheme
- * @package Charcoal\Http\Router\Enums
+ * Class Authentication
+ * @package Charcoal\Http\Commons\Enums
  */
-enum AuthScheme: string implements AuthSchemeEnumInterface
+enum Authentication: string implements AuthSchemeEnumInterface
 {
     case Basic = "Basic";
     case Digest = "Digest";

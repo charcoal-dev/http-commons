@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\Http\Commons\Enums;
 
 /**
- * Enum representing HTTP methods as string values.
- * Includes common methods such as GET, POST, PUT, DELETE, and OPTIONS.
+ * Represents HTTP methods as an enumerable collection of string values.
+ * Provides the ability to perform case-insensitive lookups for a given HTTP method.
  */
 enum HttpMethod: string
 {

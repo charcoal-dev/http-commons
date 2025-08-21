@@ -30,10 +30,6 @@ enum ContentType: string implements ContentTypeEnumInterface
     case ImagePng = "image/png";
     case DocumentPdf = "application/pdf";
 
-    /**
-     * @param string $header
-     * @return self|null
-     */
     public static function find(string $header): ?self
     {
         $header = strtolower(trim(explode(";", $header)[0]));
