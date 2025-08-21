@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Abstracts;
 
+use Charcoal\Http\Commons\Contracts\HeadersInterface;
 use Charcoal\Http\Commons\Enums\HttpMethod;
 use Charcoal\Http\Commons\Enums\HttpProtocol;
-use Charcoal\Http\Commons\Header\Headers;
 
 /**
  * Represents an abstract HTTP request.
@@ -23,9 +23,9 @@ use Charcoal\Http\Commons\Header\Headers;
 abstract class AbstractRequest
 {
     public function __construct(
-        public readonly HttpProtocol $protocol,
-        public readonly HttpMethod   $method,
-        public readonly Headers      $headers,
+        public readonly HttpProtocol     $protocol,
+        public readonly HttpMethod       $method,
+        public readonly HeadersInterface $headers,
     )
     {
     }

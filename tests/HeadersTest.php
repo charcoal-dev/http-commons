@@ -11,8 +11,7 @@ namespace Charcoal\Http\Tests\Commons;
 use Charcoal\Base\Abstracts\Dataset\BatchEnvelope;
 use Charcoal\Base\Abstracts\Dataset\KeyValue;
 use Charcoal\Base\Enums\ExceptionAction;
-use Charcoal\Http\Commons\Header\Headers;
-use Charcoal\Http\Commons\Header\WritableHeaders;
+use Charcoal\Http\Commons\Headers\Headers;
 
 /**
  * Class HeadersTest
@@ -56,7 +55,7 @@ class HeadersTest extends \PHPUnit\Framework\TestCase
      */
     public function testWritableHeaders(): void
     {
-        $headers = new WritableHeaders(new BatchEnvelope([
+        $headers = new Headers(new BatchEnvelope([
             "Content-Type" => "application/json",
             "Accept" => "json",
             "X-Charcoal-App" => "MyTestApp"
