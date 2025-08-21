@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Http\Commons\Support;
+namespace Charcoal\Http\Commons\Url;
 
 /**
  * This class parses a given URL string into its individual components
