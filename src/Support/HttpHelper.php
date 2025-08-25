@@ -72,4 +72,18 @@ abstract readonly class HttpHelper
             default => null,
         }, isset($brackets)];
     }
+
+    /**
+     * Reconstructs a hostname and optional port from the provided parts.
+     * Returns the reassembled string or false on failure.
+     */
+    public static function rejoinValidatedParts(array $parts): string|false
+    {
+        return match (true) {
+            (!$parts || !$parts[0]) => false,
+            count($parts) === 1 => $parts[0],
+            count($parts) === 2 => $parts[0] . ":" . $parts[1],
+            count($parts) === 3 && $parts[1] === true => "[" . $parts[0] . "]:" . $parts[1],
+        };
+    }
 }

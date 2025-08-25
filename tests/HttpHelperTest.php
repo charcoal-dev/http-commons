@@ -21,23 +21,23 @@ class HttpHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testMustAccept(): void
     {
-        $this->assertSame(["www.example.com", null], HttpHelper::normalizeHostnamePort("www.Example.COM"), "FQDN");
-        $this->assertSame(["example.com", 443], HttpHelper::normalizeHostnamePort("example.com:443"), "FQDN + port");
-        $this->assertSame(["example.com", 65535], HttpHelper::normalizeHostnamePort("example.com:65535"), "Max port");
-        $this->assertSame(["example.com", null], HttpHelper::normalizeHostnamePort("EXAMPLE.COM."), "Trailing dot");
-        $this->assertSame(["example.com", null], HttpHelper::normalizeHostnamePort("   example.com   "), "Whitespace trimmed");
-        $this->assertSame(["203.0.113.7", null], HttpHelper::normalizeHostnamePort("203.0.113.7"), "IPv4");
-        $this->assertSame(["203.0.113.7", 1234], HttpHelper::normalizeHostnamePort("203.0.113.7:1234"), "IPv4 + port");
-        $this->assertSame(["2001:db8::1", null], HttpHelper::normalizeHostnamePort("[2001:db8::1]"), "Bracketed IPv6");
-        $this->assertSame(["2001:db8::1", 8080], HttpHelper::normalizeHostnamePort("[2001:db8::1]:8080"), "Bracketed IPv6 + port");
-        $this->assertSame(["localhost", null], HttpHelper::normalizeHostnamePort("Localhost"), "Single-label host");
-        $this->assertSame(["xn--d1acufc.xn--p1ai", null], HttpHelper::normalizeHostnamePort("xn--d1acufc.xn--p1ai"), "Punycode TLD");
-        $this->assertSame(["example.com", 443], HttpHelper::normalizeHostnamePort("example.com.:443"), "Trailing dot + port");
-        $this->assertSame(["2001:db8::a", null], HttpHelper::normalizeHostnamePort("[2001:DB8::A]"), "Bracketed IPv6 upper → lower");
-        $this->assertSame(["2001:db8::1", 443], HttpHelper::normalizeHostnamePort(" [2001:db8::1]:443 "), "Trim + bracketed IPv6 + port");
-        $this->assertSame(["example.com", 80], HttpHelper::normalizeHostnamePort("EXAMPLE.com:080"), "Leading zeros in port");
-        $this->assertSame(["www.example.com", null], HttpHelper::normalizeHostnamePort("www.example.com."), "www + trailing dot");
-        $this->assertSame(["example.com", 1], HttpHelper::normalizeHostnamePort("example.com:01"), "Leading zero → numeric port");
+        $this->assertSame(["www.example.com", null, false], HttpHelper::normalizeHostnamePort("www.Example.COM"), "FQDN");
+        $this->assertSame(["example.com", 443, false], HttpHelper::normalizeHostnamePort("example.com:443"), "FQDN + port");
+        $this->assertSame(["example.com", 65535, false], HttpHelper::normalizeHostnamePort("example.com:65535"), "Max port");
+        $this->assertSame(["example.com", null, false], HttpHelper::normalizeHostnamePort("EXAMPLE.COM."), "Trailing dot");
+        $this->assertSame(["example.com", null, false], HttpHelper::normalizeHostnamePort("   example.com   "), "Whitespace trimmed");
+        $this->assertSame(["203.0.113.7", null, false], HttpHelper::normalizeHostnamePort("203.0.113.7"), "IPv4");
+        $this->assertSame(["203.0.113.7", 1234, false], HttpHelper::normalizeHostnamePort("203.0.113.7:1234"), "IPv4 + port");
+        $this->assertSame(["2001:db8::1", null, true], HttpHelper::normalizeHostnamePort("[2001:db8::1]"), "Bracketed IPv6");
+        $this->assertSame(["2001:db8::1", 8080, true], HttpHelper::normalizeHostnamePort("[2001:db8::1]:8080"), "Bracketed IPv6 + port");
+        $this->assertSame(["localhost", null, false], HttpHelper::normalizeHostnamePort("Localhost"), "Single-label host");
+        $this->assertSame(["xn--d1acufc.xn--p1ai", null, false], HttpHelper::normalizeHostnamePort("xn--d1acufc.xn--p1ai"), "Punycode TLD");
+        $this->assertSame(["example.com", 443, false], HttpHelper::normalizeHostnamePort("example.com.:443"), "Trailing dot + port");
+        $this->assertSame(["2001:db8::a", null, true], HttpHelper::normalizeHostnamePort("[2001:DB8::A]"), "Bracketed IPv6 upper → lower");
+        $this->assertSame(["2001:db8::1", 443, true], HttpHelper::normalizeHostnamePort(" [2001:db8::1]:443 "), "Trim + bracketed IPv6 + port");
+        $this->assertSame(["example.com", 80, false], HttpHelper::normalizeHostnamePort("EXAMPLE.com:080"), "Leading zeros in port");
+        $this->assertSame(["www.example.com", null, false], HttpHelper::normalizeHostnamePort("www.example.com."), "www + trailing dot");
+        $this->assertSame(["example.com", 1, false], HttpHelper::normalizeHostnamePort("example.com:01"), "Leading zero → numeric port");
     }
 
     /**
@@ -75,10 +75,10 @@ class HttpHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testHostnamePassPortRejects():void
     {
-        $this->assertSame(["2001:db8::1", null], HttpHelper::normalizeHostnamePort("[2001:db8::1]:"), "Empty port after bracket");
-        $this->assertSame(["localhost", null], HttpHelper::normalizeHostnamePort("localhost:70000"), "Port too high");
-        $this->assertSame(["example.com", null], HttpHelper::normalizeHostnamePort("example.com:70000"), "Port out of range");
-        $this->assertSame(["example.com", null], HttpHelper::normalizeHostnamePort("example.com:0"), "Port zero → treated as absent");
-        $this->assertSame(["2001:db8::1", null], HttpHelper::normalizeHostnamePort("[2001:db8::1]:abc"), "IPv6 with non-numeric port");
+        $this->assertSame(["2001:db8::1", null, true], HttpHelper::normalizeHostnamePort("[2001:db8::1]:"), "Empty port after bracket");
+        $this->assertSame(["localhost", null, false], HttpHelper::normalizeHostnamePort("localhost:70000"), "Port too high");
+        $this->assertSame(["example.com", null, false], HttpHelper::normalizeHostnamePort("example.com:70000"), "Port out of range");
+        $this->assertSame(["example.com", null, false], HttpHelper::normalizeHostnamePort("example.com:0"), "Port zero → treated as absent");
+        $this->assertSame(["2001:db8::1", null, true], HttpHelper::normalizeHostnamePort("[2001:db8::1]:abc"), "IPv6 with non-numeric port");
     }
 }
