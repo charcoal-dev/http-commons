@@ -18,9 +18,9 @@ abstract readonly class HttpHelper
     /**
      * Normalizes a hostname by removing any trailing slashes and converting it to lowercase.
      * @param string $hostname
-     * @return string|array<string,int|null>|false
+     * @return array<string,int|null>|false
      */
-    public static function normalizeHostname(string $hostname): string|array|false
+    public static function normalizeHostnamePort(string $hostname): array|false
     {
         $hostname = trim($hostname);
         if ($hostname === "") {
@@ -66,12 +66,9 @@ abstract readonly class HttpHelper
             return false;
         }
 
-        return match (true) {
-            isset($port) => [$hostname, match (true) {
-                $port >= 1 && $port <= 65535 => $port,
-                default => null,
-            }],
-            default => $hostname,
-        };
+        return [$hostname, match (true) {
+            isset($port) && $port >= 1 && $port <= 65535 => $port,
+            default => null,
+        }];
     }
 }
