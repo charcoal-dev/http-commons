@@ -85,8 +85,8 @@ abstract readonly class HttpHelper
 
         return match (true) {
             count($parts) === 1 => $parts[0],
-            count($parts) === 2 && $parts[1] => $parts[0] . ":" . $parts[1],
-            count($parts) === 3 && $parts[1] === true => "[" . $parts[0] . "]:" . $parts[1],
+            count($parts) === 3 && $parts[1] && !$parts[2] => $parts[0] . ":" . $parts[1],
+            $parts[2] === true => "[" . $parts[0] . "]:" . $parts[1],
             default => false,
         };
     }
