@@ -17,6 +17,8 @@ abstract readonly class HttpHelper
 {
     /**
      * Normalizes a hostname by removing any trailing slashes and converting it to lowercase.
+     * Returns validated hostname at index 0, and port if found at index 1, otherwise returns false.
+     * If the hostname is a bracketed IPv6 address, expect boolean true at index 2.
      * @param string $hostname
      * @return array<string,int|null>|false
      */
@@ -45,7 +47,6 @@ abstract readonly class HttpHelper
                 if (ctype_digit($port)) {
                     $port = (int)$port;
                 }
-
             }
         }
 
@@ -69,6 +70,6 @@ abstract readonly class HttpHelper
         return [$hostname, match (true) {
             isset($port) && $port >= 1 && $port <= 65535 => $port,
             default => null,
-        }];
+        }, isset($brackets)];
     }
 }
