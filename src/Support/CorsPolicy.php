@@ -25,7 +25,7 @@ final readonly class CorsPolicy
     public function __construct(
         public bool   $enforce,
         ?array        $origins,
-        HttpMethods   $methods,
+        ?HttpMethods  $methods = null,
         public string $allow = "Content-Type, Content-Length, Authorization",
         public string $expose = "Location, ETag, Retry-After, Content-Disposition, Content-Transfer-Encoding",
         public int    $maxAge = 600,
@@ -34,11 +34,10 @@ final readonly class CorsPolicy
     {
         $final = [];
         foreach ($origins as $origin) {
+            $final[] = strtolower(trim($origin));
             if (!HttpHelper::isValidOrigin($origin)) {
                 throw new \InvalidArgumentException("Invalid CORS origin: " . $origin);
             }
-
-            $final[] = strtolower($origin);
         }
 
         $this->origins = $final;
@@ -46,9 +45,11 @@ final readonly class CorsPolicy
             throw new \LogicException("Credentials are not allowed without an origin");
         }
 
-        $this->methods = $methods->count() ? implode(", ", array_map(fn($m) => $m->name, $methods->getArray())) : "*";
         if ($this->maxAge < 0) {
             throw new \OutOfRangeException("Max age must be a non-negative integer");
         }
+
+        $this->methods = implode(", ", array_map(fn($m) => $m->name, $methods?->getArray() ?? [])) ?:
+            "GET, POST, PUT, DELETE, OPTIONS, HEAD";
     }
 }
