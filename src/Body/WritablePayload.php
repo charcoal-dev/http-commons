@@ -8,11 +8,13 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Body;
 
+use Charcoal\Http\Commons\Contracts\PayloadInterface;
+
 /**
  * Class WritablePayload
  * @package Charcoal\Http\Commons\Body
  */
-class WritablePayload extends Payload
+class WritablePayload extends Payload implements PayloadInterface
 {
     /**
      * @param string $name
