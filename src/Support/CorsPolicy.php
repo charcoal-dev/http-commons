@@ -23,6 +23,7 @@ final readonly class CorsPolicy
      * Constructor for initializing CORS settings.
      */
     public function __construct(
+        public bool   $enforce,
         ?array        $origins,
         HttpMethods   $methods,
         public string $allow = "Content-Type, Content-Length, Authorization",
