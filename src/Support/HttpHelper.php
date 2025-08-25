@@ -16,6 +16,23 @@ use Charcoal\Base\Support\Helpers\NetworkHelper;
 abstract readonly class HttpHelper
 {
     /**
+     * @param mixed $origin
+     * @return bool
+     */
+    public static function isValidOrigin(mixed $origin): bool
+    {
+        if (!is_string($origin) || trim($origin) === "") {
+            return false;
+        }
+
+        if (preg_match('/\A(https?):\/\/([a-zA-Z0-9.-]+)(:\d+)?\z/', $origin)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Normalizes a hostname by removing any trailing slashes and converting it to lowercase.
      * Returns validated hostname at index 0, and port if found at index 1, otherwise returns false.
      * If the hostname is a bracketed IPv6 address, expect boolean true at index 2.
