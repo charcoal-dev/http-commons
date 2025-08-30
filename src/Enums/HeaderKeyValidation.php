@@ -15,11 +15,11 @@ use Charcoal\Base\Enums\Charset;
  * - RFC7230: Adheres to the conventions outlined in the RFC 7230 specification.
  * - UNSANITIZED: Allows header keys to remain unvalidated or unmodified.
  */
-enum HeaderKeyValidation
+enum HeaderKeyValidation: string
 {
-    case STRICT;
-    case RFC7230;
-    case UNSANITIZED;
+    case STRICT = "strict";
+    case RFC7230 = "rfc7230";
+    case UNSANITIZED = "unsanitized";
 
     /**
      * Validates the given name against the specified validation rule.

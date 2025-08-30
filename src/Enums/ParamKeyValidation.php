@@ -11,11 +11,11 @@ namespace Charcoal\Http\Commons\Enums;
 /**
  * This enumeration defines the modes of parameter key validation.
  */
-enum ParamKeyValidation
+enum ParamKeyValidation: string
 {
-    case STRICT;
-    case REGULAR;
-    case UNSANITIZED;
+    case STRICT = "strict";
+    case REGULAR = "regular";
+    case UNSANITIZED = "unsanitized";
 
     /**
      * Validates the given key against the specified validation rule.
