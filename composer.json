@@ -14,7 +14,6 @@
   ],
   "require": {
     "php": "^8.3",
-    "charcoal-dev/contracts": "^0.1.0",
     "charcoal-dev/base": "^0.1.4",
     "ext-mbstring": "*"
   },

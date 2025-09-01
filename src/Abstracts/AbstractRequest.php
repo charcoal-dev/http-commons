@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Abstracts;
 
-use Charcoal\Contracts\Http\HttpRequestInterface;
 use Charcoal\Http\Commons\Contracts\HeadersInterface;
 use Charcoal\Http\Commons\Enums\HttpMethod;
 use Charcoal\Http\Commons\Enums\HttpProtocol;
@@ -21,7 +20,7 @@ use Charcoal\Http\Commons\Enums\HttpProtocol;
  * the specifics of handling particular types of requests.
  * @noinspection PhpClassCanBeReadonlyInspection
  */
-abstract class AbstractRequest implements HttpRequestInterface
+abstract class AbstractRequest
 {
     public function __construct(
         public readonly HttpProtocol     $protocol,
