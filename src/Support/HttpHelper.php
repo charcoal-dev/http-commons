@@ -80,11 +80,14 @@ abstract readonly class HttpHelper
             $key = trim(rawurldecode($kRaw));
             $val = trim(rawurldecode($vRaw));
 
-            // Encoding Checks
+            // A key cannot be empty (post-decode) and must not contain whitespace
             if (!$key) {
                 throw new \InvalidArgumentException("Empty key is not allowed at index " . $index);
+            } elseif (preg_match("/\s/u", $key)) {
+                throw new \InvalidArgumentException("Key at index " . $index . " contains whitespace");
             }
 
+            // Encoding Checks
             if ($utf8Encoding) {
                 if (!mb_check_encoding($key, "UTF-8")) {
                     throw new \InvalidArgumentException(sprintf("Key at index %d is not valid UTF-8", $index));
