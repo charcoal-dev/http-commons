@@ -81,7 +81,6 @@ abstract readonly class HttpHelper
             $val = trim(rawurldecode($vRaw));
 
             // Encoding Checks
-            $key = trim($key);
             if (!$key) {
                 throw new \InvalidArgumentException("Empty key is not allowed at index " . $index);
             }
