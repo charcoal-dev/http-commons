@@ -56,6 +56,7 @@ abstract readonly class HttpHelper
         }
 
         $parsed = [];
+        $dupCheck = [];
         $index = -1;
         foreach (explode("&", $queryStr) as $pair) {
             $index++;
@@ -85,6 +86,13 @@ abstract readonly class HttpHelper
                 throw new \InvalidArgumentException("Empty key is not allowed at index " . $index);
             } elseif (preg_match("/\s/u", $key)) {
                 throw new \InvalidArgumentException("Key at index " . $index . " contains whitespace");
+            } elseif (preg_match("/[^\x21-\x7E]/", $key)) {
+                throw new \InvalidArgumentException("Non-ASCII in key at index " . $index);
+            }
+
+            $keyLc = strtolower($key);
+            if (isset($dupCheck[$keyLc])) {
+                throw new \InvalidArgumentException("Duplicate key detected: " . $key);
             }
 
             // Encoding Checks
@@ -111,6 +119,7 @@ abstract readonly class HttpHelper
                 throw new \InvalidArgumentException("Value for key: " . $key . " is too long");
             }
 
+            $dupCheck[$keyLc] = true;
             $parsed[$key] ??= [];
             $parsed[$key][] = $val;
         }
