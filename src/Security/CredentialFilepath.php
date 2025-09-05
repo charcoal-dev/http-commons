@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Security;
 
-use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
 use Charcoal\Http\Commons\Contracts\CredentialObjectInterface;
 use Charcoal\Http\Commons\Enums\Security\CredentialEncoding;
 use Charcoal\Http\Commons\Enums\Security\CredentialType;

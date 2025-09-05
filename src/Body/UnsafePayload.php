@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Body;
 
-use Charcoal\Base\Charsets\Ascii;
-use Charcoal\Base\Charsets\Utf8;
-use Charcoal\Base\Enums\Charset;
+use Charcoal\Charsets\Support\AsciiHelper;
+use Charcoal\Charsets\Support\Utf8Helper;
+use Charcoal\Contracts\Charsets\Charset;
 use Charcoal\Http\Commons\Enums\ParamKeyValidation;
 
 /**
@@ -49,7 +49,7 @@ class UnsafePayload extends Payload
             return "";
         }
 
-        $value = Ascii::sanitizeUseRegEx($param, $tabChar, $lineBreaks, $nullByte);
+        $value = AsciiHelper::sanitizeUseRegEx($param, $tabChar, $lineBreaks, $nullByte);
         if ($trim) {
             $value = trim($value);
         }
@@ -113,8 +113,8 @@ class UnsafePayload extends Payload
     {
         if (is_string($value)) {
             $value = match ($charset) {
-                Charset::ASCII => Ascii::sanitizeUseRegEx($value),
-                Charset::UTF8 => Utf8::filterOutExtras($value, true, true, ...$this->unicodeRanges),
+                Charset::ASCII => AsciiHelper::sanitizeUseRegEx($value),
+                Charset::UTF8 => Utf8Helper::filterOutExtras($value, true, true, ...$this->unicodeRanges),
             };
 
             return trim($value);

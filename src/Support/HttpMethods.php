@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Support;
 
-use Charcoal\Base\Vectors\AbstractEnumVector;
 use Charcoal\Http\Commons\Enums\HttpMethod;
+use Charcoal\Vectors\Enums\AbstractEnumVector;
 
 /**
  * Represents a collection of HTTP methods.

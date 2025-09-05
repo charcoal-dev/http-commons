@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Enums;
 
-use Charcoal\Base\Enums\Charset;
+use Charcoal\Contracts\Charsets\Charset;
 
 /**
  * - STRICT: Enforces strict compliance with header key naming rules.

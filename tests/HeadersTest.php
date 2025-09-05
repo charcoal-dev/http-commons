@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Tests\Commons;
 
-use Charcoal\Base\Abstracts\Dataset\BatchEnvelope;
-use Charcoal\Base\Abstracts\Dataset\KeyValue;
-use Charcoal\Base\Enums\ExceptionAction;
+use Charcoal\Base\Dataset\BatchEnvelope;
+use Charcoal\Base\Dataset\KeyValue;
+use Charcoal\Contracts\Errors\ExceptionAction;
 use Charcoal\Http\Commons\Headers\Headers;
 
 /**

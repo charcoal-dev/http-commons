@@ -14,7 +14,9 @@
   ],
   "require": {
     "php": "^8.3",
-    "charcoal-dev/base": "^0.1.4",
+    "charcoal-dev/base": "^0.2.1",
+    "charcoal-dev/vectors": "^0.2.1",
+    "charcoal-dev/charsets": "^0.2.0",
     "ext-mbstring": "*"
   },
   "autoload": {

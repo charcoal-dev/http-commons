@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Headers;
 
-use Charcoal\Base\Abstracts\AbstractDataset;
-use Charcoal\Base\Abstracts\Dataset\BatchEnvelope;
-use Charcoal\Base\Abstracts\Dataset\KeyValue;
-use Charcoal\Base\Enums\Charset;
+use Charcoal\Base\Dataset\AbstractDataset;
+use Charcoal\Base\Dataset\BatchEnvelope;
+use Charcoal\Base\Dataset\KeyValue;
+use Charcoal\Contracts\Charsets\Charset;
 use Charcoal\Http\Commons\Contracts\HeadersInterface;
 
 /**

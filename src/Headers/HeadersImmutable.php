@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Http\Commons\Headers;
 
-use Charcoal\Base\Abstracts\Dataset\KeyValue;
+use Charcoal\Base\Dataset\KeyValue;
 use Charcoal\Http\Commons\Contracts\HeadersInterface;
 
 /**
