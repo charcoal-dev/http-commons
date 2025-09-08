@@ -20,22 +20,22 @@ enum CacheControl: string
 {
     case Public = "public";
     case Private = "private";
-    case NoStore = "no-cache";
+    case NoStore = "no-store";
 
     /**
      * Retrieves the cache directives for public CDN caching.
      */
-    public static function forPublicCdn(int $maxAge, int $sMaxAge = 0): CacheControlDirectives
+    public static function forPublicCdn(int $maxAge, int $sMaxAge = 0, bool $immutable = false): CacheControlDirectives
     {
-        return new CacheControlDirectives(self::Public, $maxAge, sMaxAge: $sMaxAge);
+        return new CacheControlDirectives(self::Public, $maxAge, immutable: $immutable, sMaxAge: $sMaxAge);
     }
 
     /**
      * Retrieves the cache directives for client browser caching.
      */
-    public static function forClientBrowser(int $maxAge): CacheControlDirectives
+    public static function forClientBrowser(int $maxAge, bool $mustRevalidate = false): CacheControlDirectives
     {
-        return new CacheControlDirectives(self::Private, $maxAge, mustRevalidate: true);
+        return new CacheControlDirectives(self::Private, $maxAge, mustRevalidate: $mustRevalidate);
     }
 
     /**
